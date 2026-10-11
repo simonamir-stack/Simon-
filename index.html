@@ -1,27 +1,29 @@
 <title>Dentallica Availability</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Archivo:wght@400;600;800&family=Archivo+Narrow:wght@600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Archivo+Narrow:wght@600;700&family=Lora:ital,wght@1,400&display=swap">
 <style>
-/* Layout: blackletter masthead, sticky control deck, summary strip, then a year of month grids; tapping a night opens its sheet. Single committed dark look (gig-poster black, enamel white, gum pink). */
+/* Layout: press-kit masthead with red rule, sticky control deck, summary strip, a year of month grids, cream booking-style footer. Single committed dark look taken from the Dentallica EPK: stage black, Metallica red, cream. */
 :root {
-  --bg: #121014;
-  --panel: #1c191f;
-  --panel-2: #26222a;
-  --line: #3b3541;
-  --fg: #f1ebe2;
-  --muted: #a39aa8;
-  --gum: #ef7396;
-  --gum-ink: #1a0d12;
+  --bg: #131313;
+  --panel: #1c1b1b;
+  --panel-2: #262424;
+  --line: #3a3636;
+  --fg: #f1ece2;
+  --muted: #a8a19c;
+  --red: #d42a35;
+  --cream: #f1ece2;
+  --cream-ink: #131313;
   --yes: #4cc085;
   --maybe: #e8b247;
   --no: #e8573f;
-  --unset: #4d4653;
+  --unset: #4d4848;
   --yes-bg: rgba(76, 192, 133, .26);
   --maybe-bg: rgba(232, 178, 71, .14);
   --no-bg: rgba(232, 87, 63, .17);
-  --ink-on-status: #121014;
-  --display: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
+  --ink-on-status: #131313;
+  --display: "Archivo", "Arial Black", system-ui, sans-serif;
+  --serif: "Lora", Georgia, "Times New Roman", serif;
   --body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
   --label: "Archivo Narrow", "Arial Narrow", system-ui, sans-serif;
   --r: 6px;
@@ -31,15 +33,17 @@ html { background: var(--bg); }
 body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; padding-inline: 16px; padding-block: 0 48px; }
 .wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
 button { font: inherit; color: inherit; cursor: pointer; }
-button:focus-visible, select:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--gum); outline-offset: 2px; }
-.lbl { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: var(--muted); }
+button:focus-visible, select:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--cream); outline-offset: 2px; }
+.lbl { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .2em; font-size: 12px; color: var(--red); }
 
 /* masthead */
-header.mast { padding-block: 28px 4px; display: grid; gap: 6px; }
-.wordmark { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 9vw, 76px); line-height: .95; margin: 0; letter-spacing: .01em; }
-.wordmark span { color: var(--gum); }
-.mast p { margin: 0; color: var(--muted); max-width: 62ch; text-wrap: pretty; }
-.mast .range { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 13px; color: var(--fg); }
+header.mast { padding-block: 28px 18px; display: grid; gap: 8px; justify-items: center; text-align: center; border-bottom: 2px solid var(--red); margin-inline: -16px; padding-inline: 16px; }
+.eyebrow { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .32em; font-size: 12px; color: var(--muted); }
+.wordmark { font-family: var(--display); font-weight: 900; font-stretch: 125%; font-size: clamp(40px, 9vw, 84px); line-height: .9; margin: 0; letter-spacing: -.01em; text-transform: uppercase; color: var(--red); display: grid; gap: 6px; }
+.wordmark span { color: var(--fg); font-weight: 800; font-stretch: 100%; font-size: .32em; letter-spacing: .38em; padding-left: .38em; }
+.tagline { font-family: var(--serif); font-style: italic; color: var(--muted); max-width: 60ch; margin: 0; text-wrap: balance; }
+.mast .range { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; color: var(--fg); }
+.howto { margin: 0; color: var(--muted); max-width: 70ch; text-wrap: pretty; }
 
 .banner { border: 1px dashed var(--maybe); color: var(--maybe); padding: 10px 12px; border-radius: var(--r); font-size: 14px; }
 
@@ -50,13 +54,13 @@ header.mast { padding-block: 28px 4px; display: grid; gap: 6px; }
 .seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--panel); }
 .seg button { background: transparent; border: 0; padding: 7px 12px; font-weight: 600; font-size: 14px; border-right: 1px solid var(--line); }
 .seg button:last-child { border-right: 0; }
-.seg button[aria-pressed="true"] { background: var(--gum); color: var(--gum-ink); }
+.seg button[aria-pressed="true"] { background: var(--cream); color: var(--cream-ink); }
 .seg.brush button[data-brush="y"][aria-pressed="true"] { background: var(--yes); color: var(--ink-on-status); }
 .seg.brush button[data-brush="m"][aria-pressed="true"] { background: var(--maybe); color: var(--ink-on-status); }
 .seg.brush button[data-brush="n"][aria-pressed="true"] { background: var(--no); color: var(--ink-on-status); }
 .seg.brush button[data-brush="c"][aria-pressed="true"] { background: var(--fg); color: var(--bg); }
 .who.nag { animation: nag .6s ease 2; }
-@keyframes nag { 50% { box-shadow: 0 0 0 3px var(--gum); } }
+@keyframes nag { 50% { box-shadow: 0 0 0 3px var(--red); } }
 .hint { font-size: 13px; color: var(--muted); }
 
 /* legend */
@@ -71,14 +75,14 @@ header.mast { padding-block: 28px 4px; display: grid; gap: 6px; }
 /* summary */
 .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
-.card h3 { margin: 0; font-size: 15px; font-weight: 800; text-wrap: balance; }
+.card h3 { margin: 0; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; text-wrap: balance; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { border: 1px solid var(--yes); background: var(--yes-bg); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .chip.close { border-color: var(--maybe); background: var(--maybe-bg); }
 .empty { color: var(--muted); font-size: 13px; margin: 0; }
 .prog { display: grid; grid-template-columns: 64px 1fr 56px; gap: 4px 10px; align-items: center; font-size: 13px; font-variant-numeric: tabular-nums; }
 .bar { height: 6px; border-radius: 3px; background: var(--panel-2); overflow: hidden; }
-.bar i { display: block; height: 100%; background: var(--gum); }
+.bar i { display: block; height: 100%; background: var(--red); }
 .prog .n { color: var(--muted); text-align: right; }
 
 /* quick fill */
@@ -86,24 +90,24 @@ details.quick { background: var(--panel); border: 1px solid var(--line); border-
 details.quick summary { padding: 12px 14px; font-weight: 600; cursor: pointer; }
 .quick-body { padding: 0 14px 14px; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: 14px; }
 select, .btn { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font: inherit; font-size: 14px; }
-.btn.primary { background: var(--gum); color: var(--gum-ink); border-color: var(--gum); font-weight: 700; }
+.btn.primary { background: var(--cream); color: var(--cream-ink); border-color: var(--cream); font-weight: 700; }
 label.check { display: inline-flex; gap: 6px; align-items: center; }
 
 /* calendar */
 .months { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
 .month { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; min-width: 0; }
-.month h2 { margin: 0 0 8px; font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: 16px; display: flex; justify-content: space-between; }
+.month h2 { margin: 0 0 8px; font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .2em; font-size: 15px; color: var(--red); display: flex; justify-content: space-between; }
 .month h2 span { color: var(--muted); font-variant-numeric: tabular-nums; }
 .dow, .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
 .dow { font-family: var(--label); font-weight: 700; font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .08em; margin-bottom: 4px; }
-.dow .we { color: var(--gum); }
+.dow .we { color: var(--fg); }
 .day { position: relative; aspect-ratio: 1 / 1.08; min-width: 0; max-width: 100%; border: 1px solid var(--line); background: var(--panel-2); border-radius: 4px; padding: 3px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
 .day .num { font-weight: 800; font-size: 13px; line-height: 1; font-variant-numeric: tabular-nums; }
 .day.good { background: var(--yes-bg); border-color: var(--yes); }
 .day.maybe { background: var(--maybe-bg); border-color: color-mix(in srgb, var(--maybe) 60%, var(--line)); }
 .day.bad { background: var(--no-bg); border-color: color-mix(in srgb, var(--no) 55%, var(--line)); }
 .day.bad .num { text-decoration: line-through; text-decoration-color: var(--no); text-decoration-thickness: 2px; }
-.day.today { box-shadow: inset 0 0 0 2px var(--gum); }
+.day.today { box-shadow: inset 0 0 0 2px var(--cream); }
 .day.off { background: transparent; border-color: transparent; opacity: .35; }
 .day.dim { opacity: .28; }
 button.day:hover { border-color: var(--fg); }
@@ -116,7 +120,7 @@ button.day:hover { border-color: var(--fg); }
 .pad { aspect-ratio: 1 / 1.08; }
 
 /* day sheet */
-dialog#sheet { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+dialog#sheet { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 10px; padding: 0; width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
 dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 .sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding: 16px 16px 8px; }
 .sheet-head h2 { margin: 0; font-size: 20px; font-weight: 800; text-wrap: balance; }
@@ -130,8 +134,9 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 .verdict.bad { color: var(--no); border-color: var(--no); }
 .verdict.open { color: var(--muted); }
 .mrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 6px 0; border-top: 1px solid var(--line); }
-.mrow .name { font-weight: 600; }
-.mrow.me .name::after { content: " (you)"; color: var(--gum); font-weight: 400; font-size: 13px; }
+.mrow .name { font-weight: 700; display: grid; }
+.mrow .role { font-weight: 400; font-size: 12px; color: var(--muted); }
+.mrow.me .role::after { content: " \00b7  you"; color: var(--red); font-weight: 700; }
 .opts { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
 .opts button { background: transparent; border: 0; border-right: 1px solid var(--line); padding: 6px 12px; font-size: 14px; font-weight: 600; }
 .opts button:last-child { border-right: 0; }
@@ -140,6 +145,10 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 .opts button[data-v="n"][aria-pressed="true"] { background: var(--no); color: var(--ink-on-status); }
 
 .toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: var(--r); font-weight: 600; font-size: 14px; max-width: calc(100vw - 32px); z-index: 20; }
+
+footer.book { margin-inline: -16px; margin-top: 12px; border-top: 3px solid var(--red); background: var(--cream); color: var(--cream-ink); padding: 14px 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 13px; }
+footer.book b { color: var(--red); }
+footer.book span:last-child { color: #5a5550; }
 
 @media (max-width: 520px) {
   .deck { position: static; }
@@ -152,9 +161,10 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 
 <div class="wrap">
   <header class="mast">
+    <div class="eyebrow">Band calendar &middot; Practice &amp; shows</div>
     <h1 class="wordmark">Dentallica <span>Availability</span></h1>
+    <p class="tagline">Two dentists, one drill, zero mercy. Mark the nights you can rehearse and the Friday and Saturday nights you're in town to play.</p>
     <div class="range" id="range"></div>
-    <p>Pick your name, choose what you're marking, then tap nights on the calendar. A green night means the full set is in: all four of you can make it.</p>
   </header>
 
   <div class="banner" id="localBanner" hidden>Not connected to the shared band calendar, so changes save in this browser only. Open the shared link to see everyone's nights.</div>
@@ -190,6 +200,8 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
     </div>
   </div>
 
+  <p class="howto">Pick your name, choose what you're marking, then tap nights on the calendar. A green night means the full set is in: all four of you can make it.</p>
+
   <section class="summary" id="summary" aria-label="Summary"></section>
 
   <details class="quick" id="quick">
@@ -211,6 +223,8 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
   </details>
 
   <main class="months" id="cal" aria-label="Calendar"></main>
+
+  <footer class="book"><span>Drill &rsquo;Em All &middot; <b>Pulling Teeth Tour</b></span><span>Ocala, FL</span></footer>
 </div>
 
 <dialog id="sheet" aria-labelledby="sheetTitle">
@@ -229,6 +243,7 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 (function () {
   const MEMBERS = ["Jamie", "James", "Phillip", "Simon"];
   const ABBR = { Jamie: "Ja", James: "Js", Phillip: "Ph", Simon: "Si" };
+  const ROLE = { Jamie: "Dr. Jamie Amir \u00b7 Vocals & guitars", James: "James Castaldo \u00b7 Bass", Phillip: "Phillip Allen \u00b7 Drums", Simon: "Dr. Simon Amir \u00b7 Guitars" };
   const SHOW_DAYS = [5, 6]; // Friday, Saturday
   const WORD = { y: "in", m: "maybe", n: "can't make it", "": "hasn't answered" };
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -428,7 +443,7 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
       const rows = order.map(m => {
         const v = st.vals[m];
         const btn = (val, txt) => '<button type="button" data-m="' + m + '" data-k="' + k + '" data-v="' + val + '" aria-pressed="' + (v === val) + '">' + txt + '</button>';
-        return '<div class="mrow' + (m === me ? " me" : "") + '"><span class="name">' + m + '</span><span class="opts" role="group" aria-label="' + m + ' ' + name + '">' + btn("y", "In") + btn("m", "Maybe") + btn("n", "Can't") + '</span></div>';
+        return '<div class="mrow' + (m === me ? " me" : "") + '"><span class="name">' + m + '<span class="role">' + ROLE[m] + '</span></span><span class="opts" role="group" aria-label="' + m + ' ' + name + '">' + btn("y", "In") + btn("m", "Maybe") + btn("n", "Can't") + '</span></div>';
       }).join("");
       return '<div class="kind"><div class="kind-head"><span class="lbl">' + name + '</span><span class="verdict ' + st.cls + '">' + verdictText(st) + '</span></div>' + rows + '</div>';
     }).join("") + '<p class="hint">Tap a selected answer again to clear it.</p>';
