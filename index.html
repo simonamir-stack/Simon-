@@ -1,0 +1,544 @@
+<title>Dentallica Availability</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Archivo:wght@400;600;800&family=Archivo+Narrow:wght@600;700&display=swap">
+<style>
+/* Layout: blackletter masthead, sticky control deck, summary strip, then a year of month grids; tapping a night opens its sheet. Single committed dark look (gig-poster black, enamel white, gum pink). */
+:root {
+  --bg: #121014;
+  --panel: #1c191f;
+  --panel-2: #26222a;
+  --line: #3b3541;
+  --fg: #f1ebe2;
+  --muted: #a39aa8;
+  --gum: #ef7396;
+  --gum-ink: #1a0d12;
+  --yes: #4cc085;
+  --maybe: #e8b247;
+  --no: #e8573f;
+  --unset: #4d4653;
+  --yes-bg: rgba(76, 192, 133, .26);
+  --maybe-bg: rgba(232, 178, 71, .14);
+  --no-bg: rgba(232, 87, 63, .17);
+  --ink-on-status: #121014;
+  --display: "UnifrakturMaguntia", "Old English Text MT", "Times New Roman", serif;
+  --body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --label: "Archivo Narrow", "Arial Narrow", system-ui, sans-serif;
+  --r: 6px;
+  color-scheme: dark;
+}
+html { background: var(--bg); }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.45; padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, select:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--gum); outline-offset: 2px; }
+.lbl { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .08em; font-size: 12px; color: var(--muted); }
+
+/* masthead */
+header.mast { padding-block: 28px 4px; display: grid; gap: 6px; }
+.wordmark { font-family: var(--display); font-weight: 400; font-size: clamp(44px, 9vw, 76px); line-height: .95; margin: 0; letter-spacing: .01em; }
+.wordmark span { color: var(--gum); }
+.mast p { margin: 0; color: var(--muted); max-width: 62ch; text-wrap: pretty; }
+.mast .range { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 13px; color: var(--fg); }
+
+.banner { border: 1px dashed var(--maybe); color: var(--maybe); padding: 10px 12px; border-radius: var(--r); font-size: 14px; }
+
+/* control deck */
+.deck { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); margin-inline: -16px; padding: 12px 16px; display: grid; gap: 10px; }
+.deck-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.deck-row .lbl { min-width: 74px; }
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--panel); }
+.seg button { background: transparent; border: 0; padding: 7px 12px; font-weight: 600; font-size: 14px; border-right: 1px solid var(--line); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--gum); color: var(--gum-ink); }
+.seg.brush button[data-brush="y"][aria-pressed="true"] { background: var(--yes); color: var(--ink-on-status); }
+.seg.brush button[data-brush="m"][aria-pressed="true"] { background: var(--maybe); color: var(--ink-on-status); }
+.seg.brush button[data-brush="n"][aria-pressed="true"] { background: var(--no); color: var(--ink-on-status); }
+.seg.brush button[data-brush="c"][aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.who.nag { animation: nag .6s ease 2; }
+@keyframes nag { 50% { box-shadow: 0 0 0 3px var(--gum); } }
+.hint { font-size: 13px; color: var(--muted); }
+
+/* legend */
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid var(--line); }
+.sw.good { background: var(--yes-bg); border-color: var(--yes); }
+.sw.maybe { background: var(--maybe-bg); border-color: var(--maybe); }
+.sw.bad { background: var(--no-bg); border-color: var(--no); }
+.sw.open { background: var(--panel); }
+
+/* summary */
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.card h3 { margin: 0; font-size: 15px; font-weight: 800; text-wrap: balance; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--yes); background: var(--yes-bg); border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.chip.close { border-color: var(--maybe); background: var(--maybe-bg); }
+.empty { color: var(--muted); font-size: 13px; margin: 0; }
+.prog { display: grid; grid-template-columns: 64px 1fr 56px; gap: 4px 10px; align-items: center; font-size: 13px; font-variant-numeric: tabular-nums; }
+.bar { height: 6px; border-radius: 3px; background: var(--panel-2); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--gum); }
+.prog .n { color: var(--muted); text-align: right; }
+
+/* quick fill */
+details.quick { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); }
+details.quick summary { padding: 12px 14px; font-weight: 600; cursor: pointer; }
+.quick-body { padding: 0 14px 14px; display: flex; flex-wrap: wrap; gap: 8px 10px; align-items: center; font-size: 14px; }
+select, .btn { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 10px; font: inherit; font-size: 14px; }
+.btn.primary { background: var(--gum); color: var(--gum-ink); border-color: var(--gum); font-weight: 700; }
+label.check { display: inline-flex; gap: 6px; align-items: center; }
+
+/* calendar */
+.months { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px; }
+.month { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; min-width: 0; }
+.month h2 { margin: 0 0 8px; font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: 16px; display: flex; justify-content: space-between; }
+.month h2 span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.dow, .grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.dow { font-family: var(--label); font-weight: 700; font-size: 11px; color: var(--muted); text-align: center; letter-spacing: .08em; margin-bottom: 4px; }
+.dow .we { color: var(--gum); }
+.day { position: relative; aspect-ratio: 1 / 1.08; min-width: 0; max-width: 100%; border: 1px solid var(--line); background: var(--panel-2); border-radius: 4px; padding: 3px; display: flex; flex-direction: column; justify-content: space-between; text-align: left; }
+.day .num { font-weight: 800; font-size: 13px; line-height: 1; font-variant-numeric: tabular-nums; }
+.day.good { background: var(--yes-bg); border-color: var(--yes); }
+.day.maybe { background: var(--maybe-bg); border-color: color-mix(in srgb, var(--maybe) 60%, var(--line)); }
+.day.bad { background: var(--no-bg); border-color: color-mix(in srgb, var(--no) 55%, var(--line)); }
+.day.bad .num { text-decoration: line-through; text-decoration-color: var(--no); text-decoration-thickness: 2px; }
+.day.today { box-shadow: inset 0 0 0 2px var(--gum); }
+.day.off { background: transparent; border-color: transparent; opacity: .35; }
+.day.dim { opacity: .28; }
+button.day:hover { border-color: var(--fg); }
+.star { position: absolute; top: 2px; right: 4px; font-size: 11px; color: var(--yes); font-weight: 800; }
+.pills { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.p { font-style: normal; font-family: var(--label); font-weight: 700; font-size: 9px; line-height: 12px; text-align: center; border-radius: 2px; background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--unset); }
+.p.y { background: var(--yes); color: var(--ink-on-status); box-shadow: none; }
+.p.m { background: var(--maybe); color: var(--ink-on-status); box-shadow: none; }
+.p.n { background: var(--no); color: var(--ink-on-status); box-shadow: none; text-decoration: line-through; }
+.pad { aspect-ratio: 1 / 1.08; }
+
+/* day sheet */
+dialog#sheet { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(520px, calc(100vw - 32px)); max-height: calc(100vh - 48px); }
+dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
+.sheet-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; padding: 16px 16px 8px; }
+.sheet-head h2 { margin: 0; font-size: 20px; font-weight: 800; text-wrap: balance; }
+.x { background: transparent; border: 1px solid var(--line); border-radius: var(--r); padding: 4px 10px; }
+.sheet-body { padding: 0 16px 16px; display: grid; gap: 16px; }
+.kind { display: grid; gap: 8px; }
+.kind-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.verdict { font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); }
+.verdict.good { color: var(--yes); border-color: var(--yes); }
+.verdict.maybe { color: var(--maybe); border-color: var(--maybe); }
+.verdict.bad { color: var(--no); border-color: var(--no); }
+.verdict.open { color: var(--muted); }
+.mrow { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 6px 0; border-top: 1px solid var(--line); }
+.mrow .name { font-weight: 600; }
+.mrow.me .name::after { content: " (you)"; color: var(--gum); font-weight: 400; font-size: 13px; }
+.opts { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.opts button { background: transparent; border: 0; border-right: 1px solid var(--line); padding: 6px 12px; font-size: 14px; font-weight: 600; }
+.opts button:last-child { border-right: 0; }
+.opts button[data-v="y"][aria-pressed="true"] { background: var(--yes); color: var(--ink-on-status); }
+.opts button[data-v="m"][aria-pressed="true"] { background: var(--maybe); color: var(--ink-on-status); }
+.opts button[data-v="n"][aria-pressed="true"] { background: var(--no); color: var(--ink-on-status); }
+
+.toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: var(--r); font-weight: 600; font-size: 14px; max-width: calc(100vw - 32px); z-index: 20; }
+
+@media (max-width: 520px) {
+  .deck { position: static; }
+  .deck-row .lbl { min-width: 0; width: 100%; }
+  .months { grid-template-columns: minmax(0, 1fr); }
+  .seg button { padding: 7px 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .who.nag { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <h1 class="wordmark">Dentallica <span>Availability</span></h1>
+    <div class="range" id="range"></div>
+    <p>Pick your name, choose what you're marking, then tap nights on the calendar. A green night means the full set is in: all four of you can make it.</p>
+  </header>
+
+  <div class="banner" id="localBanner" hidden>Not connected to the shared band calendar, so changes save in this browser only. Open the shared link to see everyone's nights.</div>
+
+  <div class="deck" id="deck">
+    <div class="deck-row">
+      <span class="lbl">I am</span>
+      <div class="seg who" id="who" role="group" aria-label="Who are you"></div>
+    </div>
+    <div class="deck-row">
+      <span class="lbl">Showing</span>
+      <div class="seg" id="modeSeg" role="group" aria-label="Which calendar">
+        <button type="button" data-mode="p" aria-pressed="true">Practice nights</button>
+        <button type="button" data-mode="s" aria-pressed="false">Show nights (Fri &amp; Sat)</button>
+      </div>
+    </div>
+    <div class="deck-row">
+      <span class="lbl">Tap a night</span>
+      <div class="seg brush" id="brushSeg" role="group" aria-label="What tapping a night does">
+        <button type="button" data-brush="i" aria-pressed="true">Open details</button>
+        <button type="button" data-brush="y" aria-pressed="false">I'm in</button>
+        <button type="button" data-brush="m" aria-pressed="false">Maybe</button>
+        <button type="button" data-brush="n" aria-pressed="false">Can't</button>
+        <button type="button" data-brush="c" aria-pressed="false">Clear</button>
+      </div>
+    </div>
+    <div class="legend" aria-label="Legend">
+      <span><i class="sw good"></i>Full set: everyone's in</span>
+      <span><i class="sw maybe"></i>No one's out, some maybes</span>
+      <span><i class="sw bad"></i>Someone can't</span>
+      <span><i class="sw open"></i>Waiting on answers</span>
+      <span><b style="color:var(--yes)">★</b> Everyone in town for a show</span>
+    </div>
+  </div>
+
+  <section class="summary" id="summary" aria-label="Summary"></section>
+
+  <details class="quick" id="quick">
+    <summary>Quick fill a whole weekday</summary>
+    <div class="quick-body">
+      <span>Mark every</span>
+      <select id="qDow" aria-label="Weekday">
+        <option value="0">Sunday</option><option value="1">Monday</option><option value="2">Tuesday</option>
+        <option value="3">Wednesday</option><option value="4">Thursday</option><option value="5">Friday</option><option value="6">Saturday</option>
+      </select>
+      <span id="qKindLabel">practice night</span>
+      <span>as</span>
+      <select id="qVal" aria-label="Status">
+        <option value="y">I'm in</option><option value="m">Maybe</option><option value="n">Can't</option><option value="">Clear</option>
+      </select>
+      <label class="check"><input type="checkbox" id="qOnlyBlank" checked> only nights I haven't answered</label>
+      <button type="button" class="btn primary" id="qApply">Apply for the year</button>
+    </div>
+  </details>
+
+  <main class="months" id="cal" aria-label="Calendar"></main>
+</div>
+
+<dialog id="sheet" aria-labelledby="sheetTitle">
+  <form method="dialog">
+    <div class="sheet-head">
+      <h2 id="sheetTitle"></h2>
+      <button class="x" value="close" aria-label="Close">Close</button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  const MEMBERS = ["Jamie", "James", "Phillip", "Simon"];
+  const ABBR = { Jamie: "Ja", James: "Js", Phillip: "Ph", Simon: "Si" };
+  const SHOW_DAYS = [5, 6]; // Friday, Saturday
+  const WORD = { y: "in", m: "maybe", n: "can't make it", "": "hasn't answered" };
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const LOCAL_KEY = "dentallica-availability";
+  const ME_KEY = "dentallica-me";
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const end = new Date(today); end.setFullYear(end.getFullYear() + 1);
+  const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  const fromKey = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+  const todayKey = key(today);
+  const isShowDay = d => SHOW_DAYS.includes(d.getDay());
+  const fmtShort = d => DOW[d.getDay()] + " " + MONTHS[d.getMonth()].slice(0, 3) + " " + d.getDate();
+
+  // ---- state ----
+  let db = null, ready = false, readOnly = false, localMode = false;
+  let server = {};       // member -> { date: {p, s} } as last confirmed by the store
+  const exists = {};     // member -> doc exists in store
+  const pending = {};    // member -> unsent edits
+  const inflight = {};   // member -> edits being written
+  let view = {};         // merged picture used for rendering
+  let mode = "p", brush = "i", me = null, openDate = null;
+
+  try { me = localStorage.getItem(ME_KEY); if (!MEMBERS.includes(me)) me = null; } catch (e) {}
+
+  const mergeDays = (a, b) => {
+    const out = Object.assign({}, a);
+    for (const k in b) out[k] = Object.assign({}, a[k], b[k]);
+    return out;
+  };
+  function rebuild() {
+    view = {};
+    for (const m of MEMBERS) view[m] = mergeDays(mergeDays(server[m] || {}, inflight[m] || {}), pending[m] || {});
+  }
+  const get = (m, d, k) => (view[m] && view[m][d] && view[m][d][k]) || "";
+
+  function statusOf(d, k) {
+    const vals = {}; let yes = 0, maybe = 0, no = 0;
+    for (const m of MEMBERS) { const v = get(m, d, k); vals[m] = v; if (v === "y") yes++; else if (v === "m") maybe++; else if (v === "n") no++; }
+    const cls = no ? "bad" : yes === MEMBERS.length ? "good" : maybe ? "maybe" : "open";
+    return { cls, vals, yes, maybe, no };
+  }
+
+  // ---- writes ----
+  let flushTimer = null, flushing = false;
+  function setStatus(m, d, k, v) {
+    if (!ready) { toast("Still loading the band's calendar. Try again in a second."); return false; }
+    if (readOnly) { toast("You have view-only access. Ask Simon to share the calendar with you as an Editor."); return false; }
+    pending[m] = pending[m] || {};
+    pending[m][d] = Object.assign({}, pending[m][d], { [k]: v });
+    rebuild();
+    scheduleFlush();
+    return true;
+  }
+  function scheduleFlush() { clearTimeout(flushTimer); flushTimer = setTimeout(flush, 350); }
+  async function flush() {
+    if (flushing) return;
+    flushing = true;
+    try {
+      while (Object.keys(pending).length) {
+        const m = Object.keys(pending)[0];
+        const days = pending[m]; delete pending[m];
+        inflight[m] = days;
+        try { await writeMember(m, days); }
+        catch (e) {
+          if (e && e.code === "unavailable") {
+            await new Promise(r => setTimeout(r, 600 + Math.random() * 800));
+            try { await writeMember(m, days); } catch (e2) { handleWriteError(e2); }
+          } else handleWriteError(e);
+        }
+        delete inflight[m];
+        rebuild(); renderAll();
+      }
+    } finally { flushing = false; }
+  }
+  async function writeMember(m, days) {
+    if (localMode) {
+      server[m] = mergeDays(server[m] || {}, days);
+      try { localStorage.setItem(LOCAL_KEY, JSON.stringify(server)); } catch (e) {}
+      return;
+    }
+    const ref = db.doc("members/" + m);
+    if (exists[m]) await ref.update({ days });
+    else { await ref.set({ days: mergeDays(server[m] || {}, days) }); exists[m] = true; server[m] = mergeDays(server[m] || {}, days); }
+  }
+  function handleWriteError(e) {
+    const code = e && e.code;
+    if (code === "invalid_argument" || code === "not_granted") {
+      readOnly = true;
+      toast("Couldn't save: you have view-only access. Ask Simon to share the calendar with you as an Editor.");
+    } else if (code === "quota_exceeded") {
+      toast("The calendar's storage is full, so that change wasn't saved.");
+    } else {
+      toast("That change didn't save. Check your connection and try again.");
+    }
+  }
+
+  // ---- rendering ----
+  const $ = id => document.getElementById(id);
+  const cal = $("cal");
+
+  function dayCell(dt) {
+    const k = key(dt);
+    const outOfRange = dt < today || dt > end;
+    const weekend = isShowDay(dt);
+    if (outOfRange) return '<div class="day off"><span class="num">' + dt.getDate() + '</span></div>';
+    if (mode === "s" && !weekend) return '<div class="day off"><span class="num">' + dt.getDate() + '</span></div>';
+    const st = statusOf(k, mode);
+    const pills = MEMBERS.map(m => '<i class="p ' + (st.vals[m] || "u") + '">' + ABBR[m] + '</i>').join("");
+    const star = mode === "p" && weekend && statusOf(k, "s").cls === "good" ? '<b class="star" aria-hidden="true">★</b>' : "";
+    const label = fmtShort(dt) + ", " + (mode === "p" ? "practice" : "show") + ": " + MEMBERS.map(m => m + " " + WORD[st.vals[m]]).join(", ");
+    return '<button type="button" class="day ' + st.cls + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
+  }
+
+  function renderCalendar() {
+    const out = [];
+    let cur = new Date(today.getFullYear(), today.getMonth(), 1);
+    while (cur <= end) {
+      const y = cur.getFullYear(), mo = cur.getMonth();
+      const lead = new Date(y, mo, 1).getDay();
+      const n = new Date(y, mo + 1, 0).getDate();
+      let cells = "";
+      for (let i = 0; i < lead; i++) cells += '<div class="pad"></div>';
+      for (let d = 1; d <= n; d++) cells += dayCell(new Date(y, mo, d));
+      const dow = DOW.map((w, i) => '<span' + (SHOW_DAYS.includes(i) ? ' class="we"' : "") + '>' + w.slice(0, 2) + '</span>').join("");
+      out.push('<section class="month"><h2>' + MONTHS[mo] + ' <span>' + y + '</span></h2><div class="dow">' + dow + '</div><div class="grid">' + cells + '</div></section>');
+      cur = new Date(y, mo + 1, 1);
+    }
+    cal.innerHTML = out.join("");
+  }
+
+  function upcoming(kind, test, limit) {
+    const hits = [];
+    for (let d = new Date(today); d <= end && hits.length < limit; d.setDate(d.getDate() + 1)) {
+      if (kind === "s" && !isShowDay(d)) continue;
+      const st = statusOf(key(d), kind);
+      if (test(st)) hits.push(new Date(d));
+    }
+    return hits;
+  }
+  const chips = (dates, cls) => dates.map(d => '<button type="button" class="chip ' + (cls || "") + '" data-date="' + key(d) + '">' + fmtShort(d) + '</button>').join("");
+
+  function renderSummary() {
+    const anyData = MEMBERS.some(m => Object.keys(view[m] || {}).length);
+    const goodP = upcoming("p", s => s.cls === "good", 8);
+    const goodS = upcoming("s", s => s.cls === "good", 8);
+    const closeP = goodP.length ? [] : upcoming("p", s => s.no === 0 && s.yes === 3, 6);
+    const closeS = goodS.length ? [] : upcoming("s", s => s.no === 0 && s.yes === 3, 6);
+
+    const block = (title, good, close, kindWord) => {
+      let body;
+      if (good.length) body = '<div class="chips">' + chips(good) + '</div>';
+      else if (close.length) body = '<p class="empty">No ' + kindWord + ' with all four yet. These are one answer away:</p><div class="chips">' + chips(close, "close") + '</div>';
+      else body = '<p class="empty">' + (anyData ? "No " + kindWord + " with all four yet." : "Nobody has marked any nights yet. Pick your name above and tap the nights you're free.") + '</p>';
+      return '<div class="card"><h3>' + title + '</h3>' + body + '</div>';
+    };
+
+    // fill-in progress over the next 8 weeks
+    const horizon = new Date(today); horizon.setDate(horizon.getDate() + 55);
+    let totalP = 0, totalS = 0;
+    const doneP = {}, doneS = {};
+    MEMBERS.forEach(m => { doneP[m] = 0; doneS[m] = 0; });
+    for (let d = new Date(today); d <= horizon; d.setDate(d.getDate() + 1)) {
+      const k = key(d); totalP++;
+      const sd = isShowDay(d); if (sd) totalS++;
+      for (const m of MEMBERS) { if (get(m, k, "p")) doneP[m]++; if (sd && get(m, k, "s")) doneS[m]++; }
+    }
+    const kind = mode === "p" ? doneP : doneS, total = mode === "p" ? totalP : totalS;
+    const rows = MEMBERS.map(m => {
+      const pct = Math.round(kind[m] / total * 100);
+      return '<span>' + m + '</span><span class="bar"><i style="width:' + pct + '%"></i></span><span class="n">' + kind[m] + '/' + total + '</span>';
+    }).join("");
+    const prog = '<div class="card"><h3>Who has filled in the next 8 weeks</h3><div class="lbl">' + (mode === "p" ? "Practice nights answered" : "Show nights answered") + '</div><div class="prog">' + rows + '</div></div>';
+
+    $("summary").innerHTML =
+      block("Next practice nights with the whole band", goodP, closeP, "practice nights") +
+      block("Next show nights everyone's in town", goodS, closeS, "show nights") + prog;
+  }
+
+  function renderWho() {
+    $("who").innerHTML = MEMBERS.map(m => '<button type="button" data-me="' + m + '" aria-pressed="' + (m === me) + '">' + m + '</button>').join("");
+  }
+
+  function renderSheet() {
+    if (!openDate) return;
+    const dt = fromKey(openDate);
+    $("sheetTitle").textContent = DOW[dt.getDay()] + "day, " + MONTHS[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear();
+    const kinds = isShowDay(dt) ? [["p", "Practice"], ["s", "Show night"]] : [["p", "Practice"]];
+    const verdictText = st => st.cls === "good" ? "Full set, everyone's in"
+      : st.cls === "bad" ? (st.no === 1 ? "1 can't make it" : st.no + " can't make it")
+      : st.cls === "maybe" ? "No one's out yet, " + st.maybe + " maybe"
+      : st.yes + " of 4 in so far";
+    const order = me ? [me].concat(MEMBERS.filter(m => m !== me)) : MEMBERS;
+    $("sheetBody").innerHTML = kinds.map(([k, name]) => {
+      const st = statusOf(openDate, k);
+      const rows = order.map(m => {
+        const v = st.vals[m];
+        const btn = (val, txt) => '<button type="button" data-m="' + m + '" data-k="' + k + '" data-v="' + val + '" aria-pressed="' + (v === val) + '">' + txt + '</button>';
+        return '<div class="mrow' + (m === me ? " me" : "") + '"><span class="name">' + m + '</span><span class="opts" role="group" aria-label="' + m + ' ' + name + '">' + btn("y", "In") + btn("m", "Maybe") + btn("n", "Can't") + '</span></div>';
+      }).join("");
+      return '<div class="kind"><div class="kind-head"><span class="lbl">' + name + '</span><span class="verdict ' + st.cls + '">' + verdictText(st) + '</span></div>' + rows + '</div>';
+    }).join("") + '<p class="hint">Tap a selected answer again to clear it.</p>';
+  }
+
+  function renderAll() {
+    renderCalendar();
+    renderSummary();
+    if ($("sheet").open) renderSheet();
+  }
+
+  // ---- toast ----
+  let toastTimer = null;
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3800);
+  }
+
+  // ---- events ----
+  function openSheet(d) {
+    openDate = d; renderSheet();
+    const s = $("sheet"); if (!s.open) { try { s.showModal(); } catch (e) { s.setAttribute("open", ""); } }
+  }
+  $("sheet").addEventListener("close", () => { openDate = null; });
+
+  function needMe() {
+    if (me) return false;
+    toast("Pick your name first, next to “I am”.");
+    const w = $("who"); w.classList.remove("nag"); void w.offsetWidth; w.classList.add("nag");
+    return true;
+  }
+
+  $("who").addEventListener("click", e => {
+    const b = e.target.closest("[data-me]"); if (!b) return;
+    me = b.dataset.me;
+    try { localStorage.setItem(ME_KEY, me); } catch (err) {}
+    renderWho(); if ($("sheet").open) renderSheet();
+  });
+  $("modeSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-mode]"); if (!b) return;
+    mode = b.dataset.mode;
+    for (const x of $("modeSeg").children) x.setAttribute("aria-pressed", String(x === b));
+    $("qKindLabel").textContent = mode === "p" ? "practice night" : "show night";
+    renderAll();
+  });
+  $("brushSeg").addEventListener("click", e => {
+    const b = e.target.closest("[data-brush]"); if (!b) return;
+    brush = b.dataset.brush;
+    for (const x of $("brushSeg").children) x.setAttribute("aria-pressed", String(x === b));
+    if (brush !== "i") needMe();
+  });
+  cal.addEventListener("click", e => {
+    const b = e.target.closest("button.day"); if (!b) return;
+    const d = b.dataset.date;
+    if (brush === "i") { openSheet(d); return; }
+    if (needMe()) return;
+    if (setStatus(me, d, mode, brush === "c" ? "" : brush)) renderAll();
+  });
+  $("summary").addEventListener("click", e => {
+    const b = e.target.closest("[data-date]"); if (b) openSheet(b.dataset.date);
+  });
+  $("sheetBody").addEventListener("click", e => {
+    const b = e.target.closest("button[data-v]"); if (!b) return;
+    const cur = get(b.dataset.m, openDate, b.dataset.k);
+    const next = cur === b.dataset.v ? "" : b.dataset.v;
+    if (setStatus(b.dataset.m, openDate, b.dataset.k, next)) renderAll();
+  });
+  $("qApply").addEventListener("click", () => {
+    if (needMe()) return;
+    const dow = Number($("qDow").value), val = $("qVal").value, onlyBlank = $("qOnlyBlank").checked;
+    if (mode === "s" && !SHOW_DAYS.includes(dow)) { toast("Show nights are Fridays and Saturdays. Pick one of those, or switch to practice nights."); return; }
+    let n = 0;
+    for (let d = new Date(today); d <= end; d.setDate(d.getDate() + 1)) {
+      if (d.getDay() !== dow) continue;
+      const k = key(d);
+      if (onlyBlank && get(me, k, mode)) continue;
+      if (get(me, k, mode) === val) continue;
+      if (!setStatus(me, k, mode, val)) return;
+      n++;
+    }
+    renderAll();
+    toast(n ? "Marked " + n + " " + $("qDow").selectedOptions[0].text + (n === 1 ? "" : "s") + " for " + me + "." : "Nothing to change: those nights are already answered.");
+  });
+
+  // ---- boot ----
+  $("range").textContent = fmtShort(today) + ", " + today.getFullYear() + " – " + fmtShort(end) + ", " + end.getFullYear();
+  rebuild(); renderWho(); renderAll();
+
+  function startLocal() {
+    localMode = true;
+    try { server = JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}") || {}; } catch (e) { server = {}; }
+    $("localBanner").hidden = false;
+    ready = true; rebuild(); renderAll();
+  }
+
+  (async function () {
+    try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
+    if (!db) { startLocal(); return; }
+    db.collection("members").onSnapshot(snap => {
+      server = {};
+      for (const d of snap.docs) {
+        if (!MEMBERS.includes(d.id)) continue;
+        const body = d.data() || {};
+        server[d.id] = body.days || {};
+        exists[d.id] = true;
+      }
+      ready = true; rebuild(); renderAll();
+    }, err => {
+      toast(err && err.code === "revoked" ? "This calendar is no longer available to you." : "Lost the live connection to the band calendar. Reload the page to reconnect.");
+    });
+  })();
+})();
+</script>
