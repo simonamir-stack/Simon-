@@ -5,23 +5,23 @@
 <style>
 /* Layout: press-kit masthead with red rule, sticky control deck, summary strip, a year of month grids, cream booking-style footer. Single committed dark look taken from the Dentallica EPK: stage black, Metallica red, cream. */
 :root {
-  --bg: #131313;
-  --panel: #1c1b1b;
-  --panel-2: #262424;
-  --line: #3a3636;
+  --bg: #231f20;
+  --panel: #2c2728;
+  --panel-2: #363031;
+  --line: #4a4243;
   --fg: #f1ece2;
   --muted: #a8a19c;
   --red: #d42a35;
   --cream: #f1ece2;
-  --cream-ink: #131313;
+  --cream-ink: #231f20;
   --yes: #4cc085;
   --maybe: #e8b247;
   --no: #e8573f;
-  --unset: #4d4848;
+  --unset: #5a5253;
   --yes-bg: rgba(76, 192, 133, .26);
   --maybe-bg: rgba(232, 178, 71, .14);
   --no-bg: rgba(232, 87, 63, .17);
-  --ink-on-status: #131313;
+  --ink-on-status: #231f20;
   --display: "Archivo", "Arial Black", system-ui, sans-serif;
   --serif: "Lora", Georgia, "Times New Roman", serif;
   --body: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -40,6 +40,7 @@ button:focus-visible, select:focus-visible, summary:focus-visible, input:focus-v
 header.mast { padding-block: 28px 18px; display: grid; gap: 8px; justify-items: center; text-align: center; border-bottom: 2px solid var(--red); margin-inline: -16px; padding-inline: 16px; }
 .eyebrow { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .32em; font-size: 12px; color: var(--muted); }
 .wordmark { font-family: var(--display); font-weight: 900; font-stretch: 125%; font-size: clamp(40px, 9vw, 84px); line-height: .9; margin: 0; letter-spacing: -.01em; text-transform: uppercase; color: var(--red); display: grid; gap: 6px; }
+.wordmark img { display: block; width: min(100%, 680px); height: auto; margin: 0 auto; }
 .wordmark span { color: var(--fg); font-weight: 800; font-stretch: 100%; font-size: .32em; letter-spacing: .38em; padding-left: .38em; }
 .tagline { font-family: var(--serif); font-style: italic; color: var(--muted); max-width: 60ch; margin: 0; text-wrap: balance; }
 .mast .range { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .16em; font-size: 13px; color: var(--fg); }
@@ -146,6 +147,9 @@ dialog#sheet::backdrop { background: rgba(0, 0, 0, .6); }
 
 .toast { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 14px; border-radius: var(--r); font-weight: 600; font-size: 14px; max-width: calc(100vw - 32px); z-index: 20; }
 
+figure.art { margin: 12px auto 0; max-width: 520px; display: grid; gap: 8px; justify-items: center; }
+figure.art img { width: 100%; height: auto; display: block; }
+figure.art figcaption { font-family: var(--serif); font-style: italic; color: var(--muted); font-size: 14px; text-align: center; }
 footer.book { margin-inline: -16px; margin-top: 12px; border-top: 3px solid var(--red); background: var(--cream); color: var(--cream-ink); padding: 14px 16px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 13px; }
 footer.book b { color: var(--red); }
 footer.book span:last-child { color: #5a5550; }
@@ -162,7 +166,7 @@ footer.book span:last-child { color: #5a5550; }
 <div class="wrap">
   <header class="mast">
     <div class="eyebrow">Band calendar &middot; Practice &amp; shows</div>
-    <h1 class="wordmark">Dentallica <span>Availability</span></h1>
+    <h1 class="wordmark"><img src="assets/dentallica-logo.png" alt="Dentallica" width="1400" height="399"> <span>Availability</span></h1>
     <p class="tagline">Two dentists, one drill, zero mercy. Mark the nights you can rehearse and the Friday and Saturday nights you're in town to play.</p>
     <div class="range" id="range"></div>
   </header>
@@ -224,7 +228,9 @@ footer.book span:last-child { color: #5a5550; }
 
   <main class="months" id="cal" aria-label="Calendar"></main>
 
-  <footer class="book"><span>Drill &rsquo;Em All &middot; <b>Pulling Teeth Tour</b></span><span>Ocala, FL</span></footer>
+  <figure class="art"><img src="assets/drill-em-all.jpg" alt="Drill 'Em All, Pulling Teeth Tour: an open mouth with a worker jackhammering a tooth" width="1000" height="861" loading="lazy"></figure>
+
+  <footer class="book"><span>Book <b>Dentallica</b></span><span>Ocala, FL</span></footer>
 </div>
 
 <dialog id="sheet" aria-labelledby="sheetTitle">
