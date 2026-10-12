@@ -257,6 +257,11 @@ footer.book span:last-child { color: #5a5550; }
   const LOCAL_KEY = "dentallica-availability";
   const ME_KEY = "dentallica-me";
 
+  // Firebase web config for the public (no sign-in) version of this page.
+  // Paste the object from Firebase console > Project settings > Your apps > SDK setup and configuration.
+  // These values identify the project; they are not secret. Leave null to save in this browser only.
+  const FIREBASE_CONFIG = null;
+
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const end = new Date(today); end.setFullYear(end.getFullYear() + 1);
   const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
@@ -266,7 +271,7 @@ footer.book span:last-child { color: #5a5550; }
   const fmtShort = d => DOW[d.getDay()] + " " + MONTHS[d.getMonth()].slice(0, 3) + " " + d.getDate();
 
   // ---- state ----
-  let db = null, ready = false, readOnly = false, localMode = false;
+  let db = null, fb = null, ready = false, readOnly = false, localMode = false;
   let server = {};       // member -> { date: {p, s} } as last confirmed by the store
   const exists = {};     // member -> doc exists in store
   const pending = {};    // member -> unsent edits
@@ -332,13 +337,19 @@ footer.book span:last-child { color: #5a5550; }
       try { localStorage.setItem(LOCAL_KEY, JSON.stringify(server)); } catch (e) {}
       return;
     }
+    if (fb) {
+      await fb.setDoc(fb.doc(fb.store, "members", m), { days }, { merge: true });
+      return;
+    }
     const ref = db.doc("members/" + m);
     if (exists[m]) await ref.update({ days });
     else { await ref.set({ days: mergeDays(server[m] || {}, days) }); exists[m] = true; server[m] = mergeDays(server[m] || {}, days); }
   }
   function handleWriteError(e) {
     const code = e && e.code;
-    if (code === "invalid_argument" || code === "not_granted") {
+    if (code === "permission-denied") {
+      toast("The band database refused that change. Check the Firestore rules in the setup guide.");
+    } else if (code === "invalid_argument" || code === "not_granted") {
       readOnly = true;
       toast("Couldn't save: you have view-only access. Ask Simon to share the calendar with you as an Editor.");
     } else if (code === "quota_exceeded") {
@@ -545,9 +556,30 @@ footer.book span:last-child { color: #5a5550; }
     ready = true; rebuild(); renderAll();
   }
 
+  async function startFirebase() {
+    try {
+      const v = "10.12.2";
+      const [app, fs] = await Promise.all([
+        import("https://www.gstatic.com/firebasejs/" + v + "/firebase-app.js"),
+        import("https://www.gstatic.com/firebasejs/" + v + "/firebase-firestore.js"),
+      ]);
+      const store = fs.getFirestore(app.initializeApp(FIREBASE_CONFIG));
+      fb = { store, doc: fs.doc, setDoc: fs.setDoc };
+      fs.onSnapshot(fs.collection(store, "members"), snap => {
+        server = {};
+        snap.forEach(d => { if (MEMBERS.includes(d.id)) server[d.id] = (d.data() || {}).days || {}; });
+        ready = true; rebuild(); renderAll();
+      }, () => toast("Lost the live connection to the band calendar. Reload the page to reconnect."));
+    } catch (e) {
+      fb = null;
+      startLocal();
+      toast("Couldn't reach the band database, so changes save in this browser only.");
+    }
+  }
+
   (async function () {
     try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
-    if (!db) { startLocal(); return; }
+    if (!db) { if (FIREBASE_CONFIG) startFirebase(); else startLocal(); return; }
     db.collection("members").onSnapshot(snap => {
       server = {};
       for (const d of snap.docs) {
