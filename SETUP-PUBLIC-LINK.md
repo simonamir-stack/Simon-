@@ -40,7 +40,7 @@ const firebaseConfig = {
 };
 ```
 
-7. Send that block to Claude, or paste it into `index.html` in place of `const FIREBASE_CONFIG = null;`. These values identify the project; they are not passwords.
+7. Paste that block into `index.html` in place of `const FIREBASE_CONFIG = null;` (already done for dentallica-calendar). These values identify the project; they are not passwords.
 
 ## 2. Put the page online (GitHub Pages, free)
 

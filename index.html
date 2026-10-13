@@ -260,7 +260,14 @@ footer.book span:last-child { color: #5a5550; }
   // Firebase web config for the public (no sign-in) version of this page.
   // Paste the object from Firebase console > Project settings > Your apps > SDK setup and configuration.
   // These values identify the project; they are not secret. Leave null to save in this browser only.
-  const FIREBASE_CONFIG = null;
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyA_7QutSosApbwZhpKSrTpUw6Mdq9JDzf4",
+    authDomain: "dentallica-calendar.firebaseapp.com",
+    projectId: "dentallica-calendar",
+    storageBucket: "dentallica-calendar.firebasestorage.app",
+    messagingSenderId: "801690589536",
+    appId: "1:801690589536:web:9708ae2ecbf7aeb23a2605"
+  };
 
   const today = new Date(); today.setHours(0, 0, 0, 0);
   const end = new Date(today); end.setFullYear(end.getFullYear() + 1);
