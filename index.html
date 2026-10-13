@@ -112,6 +112,13 @@ label.check { display: inline-flex; gap: 6px; align-items: center; }
 .day.off { background: transparent; border-color: transparent; opacity: .35; }
 .day.dim { opacity: .28; }
 button.day:hover { border-color: var(--fg); }
+.day.hol { border-top: 3px solid var(--red); }
+.day.locked { background: transparent; border-style: dashed; opacity: .55; }
+.day.locked .plus { position: absolute; right: 4px; bottom: 2px; font-size: 14px; font-weight: 800; color: var(--muted); }
+button.day.locked:hover { opacity: 1; }
+.shownote { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); background: var(--panel-2); border-radius: var(--r); padding: 8px 10px; }
+.shownote b { color: var(--fg); }
+.sw.hol { background: var(--panel); border-top: 3px solid var(--red); }
 .star { position: absolute; top: 2px; right: 4px; font-size: 11px; color: var(--yes); font-weight: 800; }
 .pills { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
 .p { font-style: normal; font-family: var(--label); font-weight: 700; font-size: 9px; line-height: 12px; text-align: center; border-radius: 2px; background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--unset); }
@@ -167,7 +174,7 @@ footer.book span:last-child { color: #5a5550; }
   <header class="mast">
     <div class="eyebrow">Band calendar &middot; Practice &amp; shows</div>
     <h1 class="wordmark"><img src="assets/dentallica-logo.png" alt="Dentallica" width="1400" height="399"> <span>Availability</span></h1>
-    <p class="tagline">Two dentists, one drill, zero mercy. Mark the nights you can rehearse and the Friday and Saturday nights you're in town to play.</p>
+    <p class="tagline">Two dentists, one drill, zero mercy. Mark the nights you can rehearse and the nights you're in town to play: every Friday and Saturday, holiday nights, and any night the band opens up.</p>
     <div class="range" id="range"></div>
   </header>
 
@@ -182,7 +189,7 @@ footer.book span:last-child { color: #5a5550; }
       <span class="lbl">Showing</span>
       <div class="seg" id="modeSeg" role="group" aria-label="Which calendar">
         <button type="button" data-mode="p" aria-pressed="true">Practice nights</button>
-        <button type="button" data-mode="s" aria-pressed="false">Show nights (Fri &amp; Sat)</button>
+        <button type="button" data-mode="s" aria-pressed="false">Show nights</button>
       </div>
     </div>
     <div class="deck-row">
@@ -201,6 +208,8 @@ footer.book span:last-child { color: #5a5550; }
       <span><i class="sw bad"></i>Someone can't</span>
       <span><i class="sw open"></i>Waiting on answers</span>
       <span><b style="color:var(--yes)">★</b> Everyone in town for a show</span>
+      <span><i class="sw hol"></i>Holiday, open for shows</span>
+      <span><b>+</b> In Show nights, tap a dimmed night to open it</span>
     </div>
   </div>
 
@@ -254,6 +263,7 @@ footer.book span:last-child { color: #5a5550; }
   const WORD = { y: "in", m: "maybe", n: "can't make it", "": "hasn't answered" };
   const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
   const DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const DAYNAME = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
   const LOCAL_KEY = "dentallica-availability";
   const ME_KEY = "dentallica-me";
 
@@ -274,7 +284,28 @@ footer.book span:last-child { color: #5a5550; }
   const key = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   const fromKey = k => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
   const todayKey = key(today);
-  const isShowDay = d => SHOW_DAYS.includes(d.getDay());
+  // Holiday nights that open for shows automatically, in addition to every Friday and Saturday.
+  const nthWeekday = (y, mo, wd, n) => { const d = new Date(y, mo, 1); d.setDate(1 + (wd - d.getDay() + 7) % 7 + 7 * (n - 1)); return d; };
+  const lastWeekday = (y, mo, wd) => { const d = new Date(y, mo + 1, 0); d.setDate(d.getDate() - (d.getDay() - wd + 7) % 7); return d; };
+  const HOLIDAYS = {};
+  for (let y = today.getFullYear(); y <= end.getFullYear(); y++) {
+    const add = (d, name) => { HOLIDAYS[key(d)] = name; };
+    const eveOf = (d, name) => add(new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1), name);
+    add(new Date(y, 9, 31), "Halloween");
+    eveOf(nthWeekday(y, 10, 4, 4), "Thanksgiving Eve");
+    add(new Date(y, 11, 31), "New Year's Eve");
+    add(new Date(y, 2, 17), "St. Patrick's Day");
+    add(new Date(y, 4, 5), "Cinco de Mayo");
+    add(new Date(y, 6, 3), "Fourth of July Eve");
+    add(new Date(y, 6, 4), "Fourth of July");
+    eveOf(nthWeekday(y, 0, 1, 3), "MLK Day weekend");
+    eveOf(nthWeekday(y, 1, 1, 3), "Presidents' Day weekend");
+    eveOf(lastWeekday(y, 4, 1), "Memorial Day weekend");
+    eveOf(nthWeekday(y, 8, 1, 1), "Labor Day weekend");
+  }
+  // A night someone opened for shows is stored as days[date].u on that member's record.
+  const openedBy = k => MEMBERS.filter(m => get(m, k, "u"));
+  const isShowNight = d => { const k = key(d); return SHOW_DAYS.includes(d.getDay()) || !!HOLIDAYS[k] || openedBy(k).length > 0; };
   const fmtShort = d => DOW[d.getDay()] + " " + MONTHS[d.getMonth()].slice(0, 3) + " " + d.getDate();
 
   // ---- state ----
@@ -373,14 +404,15 @@ footer.book span:last-child { color: #5a5550; }
   function dayCell(dt) {
     const k = key(dt);
     const outOfRange = dt < today || dt > end;
-    const weekend = isShowDay(dt);
+    const weekend = isShowNight(dt);
+    const hol = HOLIDAYS[k] ? " hol" : "";
     if (outOfRange) return '<div class="day off"><span class="num">' + dt.getDate() + '</span></div>';
-    if (mode === "s" && !weekend) return '<div class="day off"><span class="num">' + dt.getDate() + '</span></div>';
+    if (mode === "s" && !weekend) return '<button type="button" class="day locked" data-date="' + k + '" aria-label="' + fmtShort(dt) + ', not a show night. Tap to open it for shows."><span class="num">' + dt.getDate() + '</span><span class="plus" aria-hidden="true">+</span></button>';
     const st = statusOf(k, mode);
     const pills = MEMBERS.map(m => '<i class="p ' + (st.vals[m] || "u") + '">' + ABBR[m] + '</i>').join("");
     const star = mode === "p" && weekend && statusOf(k, "s").cls === "good" ? '<b class="star" aria-hidden="true">★</b>' : "";
-    const label = fmtShort(dt) + ", " + (mode === "p" ? "practice" : "show") + ": " + MEMBERS.map(m => m + " " + WORD[st.vals[m]]).join(", ");
-    return '<button type="button" class="day ' + st.cls + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
+    const label = fmtShort(dt) + (HOLIDAYS[k] ? " (" + HOLIDAYS[k] + ")" : "") + ", " + (mode === "p" ? "practice" : "show") + ": " + MEMBERS.map(m => m + " " + WORD[st.vals[m]]).join(", ");
+    return '<button type="button" class="day ' + st.cls + hol + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
   }
 
   function renderCalendar() {
@@ -403,7 +435,7 @@ footer.book span:last-child { color: #5a5550; }
   function upcoming(kind, test, limit) {
     const hits = [];
     for (let d = new Date(today); d <= end && hits.length < limit; d.setDate(d.getDate() + 1)) {
-      if (kind === "s" && !isShowDay(d)) continue;
+      if (kind === "s" && !isShowNight(d)) continue;
       const st = statusOf(key(d), kind);
       if (test(st)) hits.push(new Date(d));
     }
@@ -433,7 +465,7 @@ footer.book span:last-child { color: #5a5550; }
     MEMBERS.forEach(m => { doneP[m] = 0; doneS[m] = 0; });
     for (let d = new Date(today); d <= horizon; d.setDate(d.getDate() + 1)) {
       const k = key(d); totalP++;
-      const sd = isShowDay(d); if (sd) totalS++;
+      const sd = isShowNight(d); if (sd) totalS++;
       for (const m of MEMBERS) { if (get(m, k, "p")) doneP[m]++; if (sd && get(m, k, "s")) doneS[m]++; }
     }
     const kind = mode === "p" ? doneP : doneS, total = mode === "p" ? totalP : totalS;
@@ -455,8 +487,15 @@ footer.book span:last-child { color: #5a5550; }
   function renderSheet() {
     if (!openDate) return;
     const dt = fromKey(openDate);
-    $("sheetTitle").textContent = DOW[dt.getDay()] + "day, " + MONTHS[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear();
-    const kinds = isShowDay(dt) ? [["p", "Practice"], ["s", "Show night"]] : [["p", "Practice"]];
+    $("sheetTitle").textContent = DAYNAME[dt.getDay()] + ", " + MONTHS[dt.getMonth()] + " " + dt.getDate() + ", " + dt.getFullYear() + (HOLIDAYS[openDate] ? " · " + HOLIDAYS[openDate] : "");
+    const showNight = isShowNight(dt);
+    const kinds = !showNight ? [["p", "Practice"]] : mode === "s" ? [["s", "Show night"], ["p", "Practice"]] : [["p", "Practice"], ["s", "Show night"]];
+    const openers = openedBy(openDate);
+    let note;
+    if (!showNight) note = '<div class="shownote"><span>Not a show night.</span><button type="button" class="btn primary" data-act="open">Open for shows</button></div>';
+    else if (SHOW_DAYS.includes(dt.getDay())) note = '';
+    else if (HOLIDAYS[openDate]) note = '<div class="shownote"><span><b>' + HOLIDAYS[openDate] + '</b> is open for shows automatically.</span></div>';
+    else note = '<div class="shownote"><span>Opened for shows by <b>' + openers.join(" and ") + '</b>.</span><button type="button" class="btn" data-act="close">Close for shows</button></div>';
     const verdictText = st => st.cls === "good" ? "Full set, everyone's in"
       : st.cls === "bad" ? (st.no === 1 ? "1 can't make it" : st.no + " can't make it")
       : st.cls === "maybe" ? "No one's out yet, " + st.maybe + " maybe"
@@ -469,8 +508,8 @@ footer.book span:last-child { color: #5a5550; }
         const btn = (val, txt) => '<button type="button" data-m="' + m + '" data-k="' + k + '" data-v="' + val + '" aria-pressed="' + (v === val) + '">' + txt + '</button>';
         return '<div class="mrow' + (m === me ? " me" : "") + '"><span class="name">' + m + '<span class="role">' + ROLE[m] + '</span></span><span class="opts" role="group" aria-label="' + m + ' ' + name + '">' + btn("y", "In") + btn("m", "Maybe") + btn("n", "Can't") + '</span></div>';
       }).join("");
-      return '<div class="kind"><div class="kind-head"><span class="lbl">' + name + '</span><span class="verdict ' + st.cls + '">' + verdictText(st) + '</span></div>' + rows + '</div>';
-    }).join("") + '<p class="hint">Tap a selected answer again to clear it.</p>';
+      return '<div class="kind"><div class="kind-head"><span class="lbl">' + name + '</span><span class="verdict ' + st.cls + '">' + verdictText(st) + '</span></div>' + (k === "s" ? note : "") + rows + '</div>';
+    }).join("") + (showNight ? "" : note) + '<p class="hint">Tap a selected answer again to clear it.</p>';
   }
 
   function renderAll() {
@@ -522,7 +561,7 @@ footer.book span:last-child { color: #5a5550; }
   cal.addEventListener("click", e => {
     const b = e.target.closest("button.day"); if (!b) return;
     const d = b.dataset.date;
-    if (brush === "i") { openSheet(d); return; }
+    if (brush === "i" || b.classList.contains("locked")) { openSheet(d); return; }
     if (needMe()) return;
     if (setStatus(me, d, mode, brush === "c" ? "" : brush)) renderAll();
   });
@@ -530,6 +569,18 @@ footer.book span:last-child { color: #5a5550; }
     const b = e.target.closest("[data-date]"); if (b) openSheet(b.dataset.date);
   });
   $("sheetBody").addEventListener("click", e => {
+    const act = e.target.closest("button[data-act]");
+    if (act) {
+      if (act.dataset.act === "open") {
+        if (needMe()) return;
+        if (setStatus(me, openDate, "u", "1")) { renderAll(); toast("Opened " + fmtShort(fromKey(openDate)) + " for shows."); }
+      } else {
+        let ok = true;
+        for (const m of openedBy(openDate)) ok = setStatus(m, openDate, "u", "") && ok;
+        if (ok) { renderAll(); toast("Closed " + fmtShort(fromKey(openDate)) + " for shows."); }
+      }
+      return;
+    }
     const b = e.target.closest("button[data-v]"); if (!b) return;
     const cur = get(b.dataset.m, openDate, b.dataset.k);
     const next = cur === b.dataset.v ? "" : b.dataset.v;
@@ -538,10 +589,10 @@ footer.book span:last-child { color: #5a5550; }
   $("qApply").addEventListener("click", () => {
     if (needMe()) return;
     const dow = Number($("qDow").value), val = $("qVal").value, onlyBlank = $("qOnlyBlank").checked;
-    if (mode === "s" && !SHOW_DAYS.includes(dow)) { toast("Show nights are Fridays and Saturdays. Pick one of those, or switch to practice nights."); return; }
     let n = 0;
     for (let d = new Date(today); d <= end; d.setDate(d.getDate() + 1)) {
       if (d.getDay() !== dow) continue;
+      if (mode === "s" && !isShowNight(d)) continue;
       const k = key(d);
       if (onlyBlank && get(me, k, mode)) continue;
       if (get(me, k, mode) === val) continue;
@@ -549,7 +600,11 @@ footer.book span:last-child { color: #5a5550; }
       n++;
     }
     renderAll();
-    toast(n ? "Marked " + n + " " + $("qDow").selectedOptions[0].text + (n === 1 ? "" : "s") + " for " + me + "." : "Nothing to change: those nights are already answered.");
+    const dayName = $("qDow").selectedOptions[0].text;
+    const anyOpen = mode === "p" || [...Array(366).keys()].some(i => { const d = new Date(today); d.setDate(d.getDate() + i); return d.getDay() === dow && isShowNight(d); });
+    toast(n ? "Marked " + n + " " + dayName + (n === 1 ? "" : "s") + " for " + me + "."
+      : anyOpen ? "Nothing to change: those nights are already answered."
+      : "No " + dayName + "s are open for shows. Open one from its details first.");
   });
 
   // ---- boot ----
