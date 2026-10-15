@@ -112,6 +112,12 @@ label.check { display: inline-flex; gap: 6px; align-items: center; }
 .day.off { background: transparent; border-color: transparent; opacity: .35; }
 .day.dim { opacity: .28; }
 button.day:hover { border-color: var(--fg); }
+.grid { touch-action: pan-y; }
+.day { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.day.sel { outline: 3px solid var(--cream); outline-offset: -2px; z-index: 1; background-image: linear-gradient(rgba(241, 236, 226, .16), rgba(241, 236, 226, .16)); }
+.selbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 15; width: max-content; max-width: calc(100vw - 24px); background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 10px; padding: 10px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
+.selbar .what { font-weight: 700; font-size: 14px; }
+.selbar .what small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
 .day.hol { border-top: 3px solid var(--red); }
 .day.locked { background: transparent; border-style: dashed; opacity: .55; }
 .day.locked .plus { position: absolute; right: 4px; bottom: 2px; font-size: 14px; font-weight: 800; color: var(--muted); }
@@ -202,6 +208,7 @@ footer.book span:last-child { color: #5a5550; }
         <button type="button" data-brush="c" aria-pressed="false">Clear</button>
       </div>
     </div>
+    <p class="hint" style="margin:0">Mark many nights at once: on a computer, click one night and shift-click another (or drag across them). On a phone, swipe sideways across nights, then keep dragging to cover more weeks.</p>
     <div class="legend" aria-label="Legend">
       <span><i class="sw good"></i>Full set: everyone's in</span>
       <span><i class="sw maybe"></i>No one's out, some maybes</span>
@@ -252,6 +259,7 @@ footer.book span:last-child { color: #5a5550; }
   </form>
 </dialog>
 
+<div class="selbar" id="selbar" role="region" aria-label="Selected nights" hidden></div>
 <div class="toast" id="toast" role="status" hidden></div>
 
 <script>
@@ -315,7 +323,7 @@ footer.book span:last-child { color: #5a5550; }
   const pending = {};    // member -> unsent edits
   const inflight = {};   // member -> edits being written
   let view = {};         // merged picture used for rendering
-  let mode = "p", brush = "i", me = null, openDate = null;
+  let mode = "p", brush = "i", me = null, openDate = null, selSet = new Set();
 
   try { me = localStorage.getItem(ME_KEY); if (!MEMBERS.includes(me)) me = null; } catch (e) {}
 
@@ -412,7 +420,7 @@ footer.book span:last-child { color: #5a5550; }
     const pills = MEMBERS.map(m => '<i class="p ' + (st.vals[m] || "u") + '">' + ABBR[m] + '</i>').join("");
     const star = mode === "p" && weekend && statusOf(k, "s").cls === "good" ? '<b class="star" aria-hidden="true">★</b>' : "";
     const label = fmtShort(dt) + (HOLIDAYS[k] ? " (" + HOLIDAYS[k] + ")" : "") + ", " + (mode === "p" ? "practice" : "show") + ": " + MEMBERS.map(m => m + " " + WORD[st.vals[m]]).join(", ");
-    return '<button type="button" class="day ' + st.cls + hol + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
+    return '<button type="button" class="day ' + st.cls + hol + (selSet.has(k) ? " sel" : "") + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
   }
 
   function renderCalendar() {
@@ -548,6 +556,7 @@ footer.book span:last-child { color: #5a5550; }
   $("modeSeg").addEventListener("click", e => {
     const b = e.target.closest("[data-mode]"); if (!b) return;
     mode = b.dataset.mode;
+    selSet = new Set(); $("selbar").hidden = true;
     for (const x of $("modeSeg").children) x.setAttribute("aria-pressed", String(x === b));
     $("qKindLabel").textContent = mode === "p" ? "practice night" : "show night";
     renderAll();
@@ -558,9 +567,89 @@ footer.book span:last-child { color: #5a5550; }
     for (const x of $("brushSeg").children) x.setAttribute("aria-pressed", String(x === b));
     if (brush !== "i") needMe();
   });
+  // ---- selecting a range of nights ----
+  let anchor = null, drag = null, suppressClick = false;
+  function rangeKeys(a, b) {
+    let lo = fromKey(a), hi = fromKey(b);
+    if (lo > hi) [lo, hi] = [hi, lo];
+    const out = [];
+    for (let d = new Date(lo); d <= hi; d.setDate(d.getDate() + 1)) {
+      if (d < today || d > end) continue;
+      if (mode === "s" && !isShowNight(d)) continue;
+      out.push(key(d));
+    }
+    return out;
+  }
+  function paintSel() {
+    for (const el of cal.querySelectorAll("button.day[data-date]")) el.classList.toggle("sel", selSet.has(el.dataset.date));
+  }
+  function clearSel() { selSet = new Set(); paintSel(); $("selbar").hidden = true; }
+  const WORDV = { y: "In", m: "Maybe", n: "Can't", "": "cleared" };
+  function applyRange(keys, v) {
+    if (needMe()) return;
+    let n = 0;
+    for (const k of keys) { if (get(me, k, mode) === v) continue; if (!setStatus(me, k, mode, v)) return; n++; }
+    clearSel(); renderAll();
+    toast(n ? (v ? "Marked " + n + " night" + (n === 1 ? "" : "s") + " " + WORDV[v] + " for " + me + "." : "Cleared " + n + " night" + (n === 1 ? "" : "s") + " for " + me + ".") : "Those nights already say " + WORDV[v] + ".");
+  }
+  function showSelBar() {
+    const keys = [...selSet].sort();
+    if (!keys.length) { clearSel(); return; }
+    const span = fmtShort(fromKey(keys[0])) + (keys.length > 1 ? " – " + fmtShort(fromKey(keys[keys.length - 1])) : "");
+    const kind = mode === "p" ? "practice" : "show";
+    $("selbar").innerHTML = '<span class="what">' + keys.length + ' ' + kind + ' night' + (keys.length === 1 ? "" : "s") + ' selected<small>' + span + (me ? " · marking for " + me : "") + '</small></span>'
+      + '<span class="opts">' + [["y", "I'm in"], ["m", "Maybe"], ["n", "Can't"], ["", "Clear"]].map(([v, t]) => '<button type="button" data-sv="' + v + '">' + t + '</button>').join("") + '</span>'
+      + '<button type="button" class="x" data-sv="cancel" aria-label="Cancel selection">Cancel</button>';
+    $("selbar").hidden = false;
+  }
+  function finishRange(keys) {
+    if (!keys.length) { clearSel(); toast(mode === "s" ? "No show nights in that range. Open nights for shows first." : "No nights in that range."); return; }
+    if (brush !== "i") { selSet = new Set(keys); paintSel(); applyRange(keys, brush === "c" ? "" : brush); return; }
+    selSet = new Set(keys); paintSel(); showSelBar();
+  }
+  $("selbar").addEventListener("click", e => {
+    const b = e.target.closest("[data-sv]"); if (!b) return;
+    if (b.dataset.sv === "cancel") { clearSel(); return; }
+    applyRange([...selSet], b.dataset.sv);
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && selSet.size) clearSel(); });
+
+  cal.addEventListener("pointerdown", e => {
+    const b = e.target.closest("button.day[data-date]");
+    if (!b || e.button > 0 || e.shiftKey) return;
+    drag = { start: b.dataset.date, cur: b.dataset.date, x: e.clientX, y: e.clientY, type: e.pointerType, active: false };
+  });
+  window.addEventListener("pointermove", e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (!drag.active) {
+      if (Math.hypot(dx, dy) < 10) return;
+      // On touch, an up/down swipe scrolls the page; only a sideways swipe starts a selection.
+      if (drag.type !== "mouse" && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
+      drag.active = true;
+    }
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const cell = el && el.closest("button.day[data-date]");
+    if (cell && cell.dataset.date !== drag.cur) { drag.cur = cell.dataset.date; selSet = new Set(rangeKeys(drag.start, drag.cur)); paintSel(); }
+    else if (drag.cur === drag.start && !selSet.size) { selSet = new Set(rangeKeys(drag.start, drag.start)); paintSel(); }
+  });
+  window.addEventListener("pointerup", () => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (!d.active) return;
+    suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
+    anchor = d.cur;
+    finishRange(rangeKeys(d.start, d.cur));
+  });
+  window.addEventListener("pointercancel", () => { if (drag && drag.active) clearSel(); drag = null; });
+
   cal.addEventListener("click", e => {
+    if (suppressClick) { suppressClick = false; return; }
     const b = e.target.closest("button.day"); if (!b) return;
     const d = b.dataset.date;
+    if (e.shiftKey && anchor) { e.preventDefault(); finishRange(rangeKeys(anchor, d)); anchor = d; return; }
+    anchor = d;
+    if (selSet.size) clearSel();
     if (brush === "i" || b.classList.contains("locked")) { openSheet(d); return; }
     if (needMe()) return;
     if (setStatus(me, d, mode, brush === "c" ? "" : brush)) renderAll();
