@@ -174,6 +174,57 @@ footer.book span:last-child { color: #5a5550; }
   .seg button { padding: 7px 10px; }
 }
 @media (prefers-reduced-motion: reduce) { .who.nag { animation: none; } }
+
+/* confirmed dates and set lists */
+.gigs { display: grid; gap: 10px; }
+.gigs-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.gigs-head h2 { margin: 0; font-size: 13px; }
+.gigs-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.gig-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.gig { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; text-align: left; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--cream); border-radius: var(--r); padding: 10px 12px; width: 100%; }
+.gig.show { border-left-color: var(--red); }
+.gig:hover { border-color: var(--fg); }
+.gdate { display: grid; text-align: center; font-family: var(--label); font-weight: 700; text-transform: uppercase; font-size: 12px; letter-spacing: .08em; color: var(--muted); min-width: 44px; }
+.gdate b { color: var(--fg); font-size: 13px; }
+.gmain { display: grid; min-width: 0; }
+.gtype { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .14em; font-size: 11px; color: var(--muted); }
+.gig.show .gtype { color: var(--red); }
+.gname { font-weight: 700; overflow-wrap: anywhere; }
+.gsub { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+.gset { font-size: 12px; color: var(--muted); white-space: nowrap; }
+details.past summary { cursor: pointer; color: var(--muted); font-size: 13px; padding-block: 4px; }
+.day.ev-show { box-shadow: inset 0 0 0 2px var(--red); }
+.day.ev-prac { box-shadow: inset 0 0 0 2px var(--cream); }
+.evb { position: absolute; top: 2px; right: 2px; font-family: var(--label); font-weight: 700; font-size: 8px; line-height: 1; letter-spacing: .04em; padding: 2px 3px; border-radius: 2px; background: var(--red); color: #fff; font-style: normal; }
+.evb.prac { background: var(--cream); color: var(--cream-ink); }
+.confirm-row { display: flex; gap: 8px; flex-wrap: wrap; }
+dialog#panel { background: var(--panel); color: var(--fg); border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 10px; padding: 0; width: min(560px, calc(100vw - 24px)); max-height: calc(100vh - 32px); }
+dialog#panel .sheet-head { position: sticky; top: 0; z-index: 2; background: var(--panel); border-bottom: 1px solid var(--line); padding-bottom: 12px; margin-bottom: 12px; }
+dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
+.form { display: grid; gap: 10px; }
+.form .row, .form.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end; }
+.form label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.form input, .form textarea, #songSearch, .paste textarea, #copyFrom { background: var(--panel-2); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; font: inherit; font-size: 15px; width: 100%; min-width: 0; box-sizing: border-box; }
+#copyFrom { width: auto; font-size: 13px; padding: 4px 8px; }
+.paste { display: grid; gap: 8px; }
+.paste summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+.paste[open] { padding-bottom: 4px; }
+.songs, .setlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.setlist { counter-reset: n; }
+.setlist li { counter-increment: n; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); }
+.setlist li::before { content: counter(n) "."; font-family: var(--label); font-weight: 700; color: var(--red); text-align: right; }
+.sgroup { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; color: var(--red); padding: 10px 0 2px; }
+.song { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); }
+.songs.pick { max-height: 320px; overflow-y: auto; }
+.song.add { width: 100%; background: transparent; border: 0; border-top: 1px solid var(--line); text-align: left; padding: 8px 4px; }
+.song.add:hover { background: var(--panel-2); }
+.sname { display: grid; min-width: 0; overflow-wrap: anywhere; }
+.sname small { color: var(--muted); font-size: 12px; }
+.ctl { display: inline-flex; gap: 4px; }
+.mini { background: var(--panel-2); border: 1px solid var(--line); border-radius: var(--r); padding: 4px 8px; font-size: 13px; min-width: 30px; }
+.mini:disabled { opacity: .35; cursor: default; }
+.plusb { font-weight: 800; font-size: 18px; color: var(--yes); padding-right: 4px; }
+.danger { padding-top: 6px; border-top: 1px solid var(--line); }
 </style>
 
 <div class="wrap">
@@ -220,6 +271,8 @@ footer.book span:last-child { color: #5a5550; }
     </div>
   </div>
 
+  <section class="gigs" id="gigs" aria-label="Confirmed dates"></section>
+
   <p class="howto">Pick your name, choose what you're marking, then tap nights on the calendar. A green night means the full set is in: all four of you can make it.</p>
 
   <section class="summary" id="summary" aria-label="Summary"></section>
@@ -257,6 +310,14 @@ footer.book span:last-child { color: #5a5550; }
     </div>
     <div class="sheet-body" id="sheetBody"></div>
   </form>
+</dialog>
+
+<dialog id="panel" aria-labelledby="panelTitle">
+  <div class="sheet-head">
+    <h2 id="panelTitle"></h2>
+    <button type="button" class="x" id="panelClose" aria-label="Close">Close</button>
+  </div>
+  <div class="sheet-body" id="panelBody"></div>
 </dialog>
 
 <div class="selbar" id="selbar" role="region" aria-label="Selected nights" hidden></div>
@@ -415,12 +476,13 @@ footer.book span:last-child { color: #5a5550; }
     const weekend = isShowNight(dt);
     const hol = HOLIDAYS[k] ? " hol" : "";
     if (outOfRange) return '<div class="day off"><span class="num">' + dt.getDate() + '</span></div>';
-    if (mode === "s" && !weekend) return '<button type="button" class="day locked" data-date="' + k + '" aria-label="' + fmtShort(dt) + ', not a show night. Tap to open it for shows."><span class="num">' + dt.getDate() + '</span><span class="plus" aria-hidden="true">+</span></button>';
+    const evb = eventBadge(k);
+    if (mode === "s" && !weekend) return '<button type="button" class="day locked' + evb.cls + '" data-date="' + k + '" aria-label="' + fmtShort(dt) + ', not a show night. Tap to open it for shows."><span class="num">' + dt.getDate() + '</span>' + evb.html + '<span class="plus" aria-hidden="true">+</span></button>';
     const st = statusOf(k, mode);
     const pills = MEMBERS.map(m => '<i class="p ' + (st.vals[m] || "u") + '">' + ABBR[m] + '</i>').join("");
-    const star = mode === "p" && weekend && statusOf(k, "s").cls === "good" ? '<b class="star" aria-hidden="true">★</b>' : "";
+    const star = !evb.html && mode === "p" && weekend && statusOf(k, "s").cls === "good" ? '<b class="star" aria-hidden="true">★</b>' : "";
     const label = fmtShort(dt) + (HOLIDAYS[k] ? " (" + HOLIDAYS[k] + ")" : "") + ", " + (mode === "p" ? "practice" : "show") + ": " + MEMBERS.map(m => m + " " + WORD[st.vals[m]]).join(", ");
-    return '<button type="button" class="day ' + st.cls + hol + (selSet.has(k) ? " sel" : "") + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
+    return '<button type="button" class="day ' + st.cls + hol + evb.cls + (selSet.has(k) ? " sel" : "") + (k === todayKey ? " today" : "") + '" data-date="' + k + '" aria-label="' + label + '"><span class="num">' + dt.getDate() + '</span>' + star + evb.html + '<span class="pills" aria-hidden="true">' + pills + '</span></button>';
   }
 
   function renderCalendar() {
@@ -509,7 +571,11 @@ footer.book span:last-child { color: #5a5550; }
       : st.cls === "maybe" ? "No one's out yet, " + st.maybe + " maybe"
       : st.yes + " of 4 in so far";
     const order = me ? [me].concat(MEMBERS.filter(m => m !== me)) : MEMBERS;
-    $("sheetBody").innerHTML = kinds.map(([k, name]) => {
+    const evs = eventsOn(openDate);
+    const confirmed = '<div class="kind"><div class="kind-head"><span class="lbl">Confirmed</span></div>'
+      + evs.map(gigRow).join("")
+      + '<div class="confirm-row"><button type="button" class="btn" data-act="cprac">Confirm practice</button><button type="button" class="btn" data-act="cshow">Confirm show</button></div></div>';
+    $("sheetBody").innerHTML = confirmed + kinds.map(([k, name]) => {
       const st = statusOf(openDate, k);
       const rows = order.map(m => {
         const v = st.vals[m];
@@ -521,6 +587,7 @@ footer.book span:last-child { color: #5a5550; }
   }
 
   function renderAll() {
+    renderGigs();
     renderCalendar();
     renderSummary();
     if ($("sheet").open) renderSheet();
@@ -658,7 +725,14 @@ footer.book span:last-child { color: #5a5550; }
     const b = e.target.closest("[data-date]"); if (b) openSheet(b.dataset.date);
   });
   $("sheetBody").addEventListener("click", e => {
+    const evb2 = e.target.closest("[data-ev]");
+    if (evb2) { const id = evb2.dataset.ev; $("sheet").close(); openPanel({ kind: "event", id }); return; }
     const act = e.target.closest("button[data-act]");
+    if (act && (act.dataset.act === "cprac" || act.dataset.act === "cshow")) {
+      const id = createEvent(openDate, act.dataset.act === "cshow" ? "show" : "practice", "");
+      if (id) { $("sheet").close(); openPanel({ kind: "event", id }); }
+      return;
+    }
     if (act) {
       if (act.dataset.act === "open") {
         if (needMe()) return;
@@ -696,12 +770,270 @@ footer.book span:last-child { color: #5a5550; }
       : "No " + dayName + "s are open for shows. Open one from its details first.");
   });
 
+  // ---- confirmed dates, set lists and the songbook ----
+  // Stored apart from availability: band/events {events: {id: {...}}} and band/songs {songs: {id: {...}}}.
+  // Removing marks an entry gone:true so writes only ever merge.
+  const PRESS_KIT_SONGS = [
+    ["Kill 'Em All", "Metallica", ["The Four Horsemen", "Motorbreath", "Jump in the Fire", "Seek and Destroy"]],
+    ["Ride the Lightning", "Metallica", ["For Whom the Bell Tolls", "Ride the Lightning", "Fade to Black", "Creeping Death"]],
+    ["Master of Puppets", "Metallica", ["Master of Puppets", "Welcome Home (Sanitarium)", "Disposable Heroes"]],
+    ["...And Justice for All", "Metallica", ["Blackened", "One", "The Shortest Straw"]],
+    ["The Black Album", "Metallica", ["Enter Sandman", "Sad but True", "Wherever I May Roam", "Don't Tread on Me", "The Unforgiven", "Nothing Else Matters", "Of Wolf and Man"]],
+    ["Reload / Garage Inc.", "Metallica", ["Fuel", "Turn the Page"]],
+    ["", "Megadeth", ["Holy Wars... The Punishment Due", "Hangar 18", "Symphony of Destruction", "Tornado of Souls", "Rust in Peace... Polaris"]],
+    ["", "Alice in Chains", ["Them Bones", "Down in a Hole", "Rooster", "Would?", "Nutshell"]],
+    ["", "Nirvana", ["Smells Like Teen Spirit", "In Bloom", "Come as You Are", "Lithium"]],
+    ["", "Pearl Jam", ["Even Flow", "Alive", "Black", "Jeremy"]],
+    ["", "Stone Temple Pilots", ["Sex Type Thing", "Plush", "Interstate Love Song"]],
+    ["", "Bush", ["Machinehead", "Come Down", "Everything Zen"]],
+    ["", "System of a Down", ["Toxicity", "Chop Suey!"]],
+    ["", "Black Sabbath", ["Paranoid", "War Pigs"]],
+    ["", "Queen", ["Crazy Little Thing Called Love", "Stone Cold Crazy"]],
+    ["", "Soundgarden", ["Black Hole Sun"]],
+    ["", "Smashing Pumpkins", ["Bullet with Butterfly Wings"]],
+    ["", "Guns N' Roses", ["Sweet Child o' Mine"]],
+    ["", "Live", ["Lightning Crashes"]],
+    ["", "Type O Negative", ["Black No. 1"]],
+    ["", "Green Day", ["Basket Case"]],
+    ["", "Bon Jovi", ["Blaze of Glory"]],
+    ["", "Lenny Kravitz", ["Are You Gonna Go My Way"]],
+    ["", "Elvis Presley", ["Suspicious Minds"]],
+  ];
+  const BAND_LOCAL_KEY = LOCAL_KEY + "-band";
+  let band = { events: {}, songs: {} }, bandBlocked = false;
+  const bandExists = {}, bandQ = {};
+  const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  function deepMerge(a, b) {
+    if (!b || typeof b !== "object" || Array.isArray(b)) return b;
+    const out = Object.assign({}, a && typeof a === "object" && !Array.isArray(a) ? a : {});
+    for (const k in b) out[k] = deepMerge(out[k], b[k]);
+    return out;
+  }
+  const events = () => Object.entries(band.events || {}).filter(([, e]) => e && !e.gone && e.date)
+    .map(([id, e]) => Object.assign({ id }, e)).sort((x, y) => (x.date + (x.time || "")).localeCompare(y.date + (y.time || "")));
+  const eventsOn = k => events().filter(e => e.date === k);
+  const allSongs = () => Object.entries(band.songs || {}).map(([id, s]) => Object.assign({ id }, s));
+  const songs = () => allSongs().filter(s => !s.gone && s.t).sort((x, y) => (x.o || 0) - (y.o || 0));
+  const songById = id => (band.songs || {})[id];
+  const TYPE = { show: "Show", practice: "Practice" };
+
+  function writeBand(docId, patch) {
+    if (!ready) { toast("Still loading the band's calendar. Try again in a second."); return false; }
+    if (bandBlocked && !localMode) { toast("Set lists can't save until the database rules are updated. See the note under Confirmed dates."); return false; }
+    band[docId] = deepMerge(band[docId] || {}, patch);
+    renderAll(); refreshPanel();
+    bandQ[docId] = (bandQ[docId] || Promise.resolve()).then(async () => {
+      try {
+        if (localMode) { try { localStorage.setItem(BAND_LOCAL_KEY, JSON.stringify(band)); } catch (e) {} }
+        else if (fb) await fb.setDoc(fb.doc(fb.store, "band", docId), { [docId]: patch }, { merge: true });
+        else {
+          const ref = db.doc("band/" + docId);
+          if (bandExists[docId]) await ref.update({ [docId]: patch });
+          else { await ref.set({ [docId]: band[docId] }); bandExists[docId] = true; }
+        }
+      } catch (e) {
+        if (e && (e.code === "permission-denied" || e.code === "invalid_argument")) { bandBlocked = true; renderAll(); toast("That didn't save: the database rules need updating for set lists."); }
+        else toast("That change didn't save. Check your connection and try again.");
+      }
+    });
+    return true;
+  }
+  function onBandSnapshot(docs) {
+    for (const [id, body] of docs) { band[id] = (body || {})[id] || {}; bandExists[id] = true; }
+    bandBlocked = false;
+    renderAll(); refreshPanel();
+  }
+
+  // ---- calendar badge for a confirmed date ----
+  function eventBadge(k) {
+    const ev = eventsOn(k);
+    if (!ev.length) return { cls: "", html: "" };
+    const show = ev.some(e => e.type === "show");
+    return { cls: show ? " ev-show" : " ev-prac", html: '<b class="evb' + (show ? "" : " prac") + '" aria-hidden="true">' + (show ? "SHOW" : "PRAC") + '</b>' };
+  }
+
+  // ---- "Confirmed dates" section ----
+  function renderGigs() { renderGigsBody(); }
+  function gigRow(e) {
+    {
+      const d = fromKey(e.date), n = (e.setlist || []).length;
+      const sub = [e.time, e.place].filter(Boolean).map(esc).join(" · ");
+      return '<button type="button" class="gig' + (e.type === "show" ? " show" : "") + '" data-ev="' + e.id + '">'
+        + '<span class="gdate"><b>' + DOW[d.getDay()] + '</b>' + MONTHS[d.getMonth()].slice(0, 3) + ' ' + d.getDate() + '</span>'
+        + '<span class="gmain"><span class="gtype">' + TYPE[e.type] + (e.date === todayKey ? " · Tonight" : "") + '</span><span class="gname">' + esc(e.name || TYPE[e.type]) + '</span>' + (sub ? '<span class="gsub">' + sub + '</span>' : '') + '</span>'
+        + '<span class="gset">' + (n ? n + " song" + (n === 1 ? "" : "s") : "No set list yet") + '</span></button>';
+    }
+  }
+  function renderGigsBody() {
+    const up = events().filter(e => e.date >= todayKey);
+    const past = events().filter(e => e.date < todayKey).slice(-3).reverse();
+    const row = gigRow;
+    const blocked = bandBlocked && !localMode
+      ? '<p class="banner">Confirmed dates and set lists need one change to your Firebase database rules before they can save. The new rules are in SETUP-PUBLIC-LINK.md, or ask Claude for them.</p>' : "";
+    $("gigs").innerHTML = '<div class="gigs-head"><h2 class="lbl">Confirmed dates</h2><span class="gigs-actions">'
+      + '<button type="button" class="btn" data-act="songbook">Songbook (' + songs().length + ')</button>'
+      + '<button type="button" class="btn primary" data-act="newev">Add a date</button></span></div>' + blocked
+      + (up.length ? '<div class="gig-list">' + up.map(row).join("") + '</div>'
+        : '<p class="empty">No confirmed practices or shows yet. Tap a night on the calendar and choose Confirm practice or Confirm show, or use Add a date.</p>')
+      + (past.length ? '<details class="past"><summary>Recent</summary><div class="gig-list">' + past.map(row).join("") + '</div></details>' : "");
+  }
+
+  // ---- panel: event editor, new date, songbook ----
+  let panel = null; // {kind: "event", id} | {kind: "new", date, type} | {kind: "songbook"}
+  let armDelete = false, songFilter = "";
+  function openPanel(p) {
+    panel = p; armDelete = false; songFilter = "";
+    renderPanel();
+    const d = $("panel"); if (!d.open) { try { d.showModal(); } catch (e) { d.setAttribute("open", ""); } }
+  }
+  function refreshPanel() {
+    if (!panel || !$("panel").open) return;
+    const a = document.activeElement;
+    if (a && $("panel").contains(a) && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && a.id !== "songSearch") return;
+    renderPanel();
+  }
+  function songRow(s, extra) {
+    return '<span class="sname">' + esc(s.t) + '<small>' + esc(s.a) + (s.g ? " · " + esc(s.g) : "") + '</small></span>' + extra;
+  }
+  function groupedSongs(list, rowFn) {
+    let out = "", last = null;
+    for (const s of list) {
+      const g = s.a === "Metallica" && s.g ? "Metallica · " + s.g : s.a || "Other";
+      if (g !== last) { out += '<li class="sgroup">' + esc(g) + '</li>'; last = g; }
+      out += rowFn(s);
+    }
+    return out;
+  }
+  function renderPanel() {
+    if (!panel) return;
+    const body = $("panelBody");
+    if (panel.kind === "new") {
+      $("panelTitle").textContent = "Add a confirmed date";
+      body.innerHTML = '<div class="form">'
+        + '<div class="seg" id="newType">' + ["practice", "show"].map(t => '<button type="button" data-type="' + t + '" aria-pressed="' + (panel.type === t) + '">' + TYPE[t] + '</button>').join("") + '</div>'
+        + '<label>Date<input type="date" id="newDate" value="' + (panel.date || todayKey) + '"></label>'
+        + '<label>Name<input type="text" id="newName" placeholder="e.g. Laurie\'s party" autocomplete="off"></label>'
+        + '<button type="button" class="btn primary" data-act="create">Add date</button></div>';
+      return;
+    }
+    if (panel.kind === "songbook") {
+      const list = songs();
+      $("panelTitle").textContent = "Songbook · " + list.length + " song" + (list.length === 1 ? "" : "s");
+      body.innerHTML = (list.length ? "" : '<div class="shownote"><span>The songbook is empty.</span><button type="button" class="btn primary" data-act="loadkit">Load the press kit repertoire</button></div>')
+        + '<div class="form row"><label>Song<input type="text" id="sbTitle" autocomplete="off"></label><label>Artist<input type="text" id="sbArtist" value="Metallica" autocomplete="off"></label><button type="button" class="btn primary" data-act="addsong">Add</button></div>'
+        + '<details class="paste"><summary>Paste several songs</summary><p class="hint">One per line, as Song - Artist. Lines without an artist use Metallica.</p><textarea id="sbPaste" rows="5"></textarea><button type="button" class="btn" data-act="pastesongs">Add these songs</button></details>'
+        + '<ul class="songs">' + groupedSongs(list, s => '<li class="song">' + songRow(s, '<button type="button" class="mini" data-rm="' + s.id + '" aria-label="Remove ' + esc(s.t) + '">Remove</button>') + '</li>') + '</ul>';
+      return;
+    }
+    const e = (band.events || {})[panel.id];
+    if (!e || e.gone) { closePanel(); return; }
+    const d = fromKey(e.date);
+    $("panelTitle").textContent = TYPE[e.type] + " · " + DAYNAME[d.getDay()] + ", " + MONTHS[d.getMonth()] + " " + d.getDate();
+    const set = (e.setlist || []).filter(id => songById(id));
+    const inSet = new Set(set);
+    const f = songFilter.trim().toLowerCase();
+    const avail = songs().filter(s => !inSet.has(s.id) && (!f || (s.t + " " + s.a).toLowerCase().includes(f)));
+    const others = events().filter(o => o.id !== panel.id && (o.setlist || []).length);
+    body.innerHTML = '<div class="form">'
+      + '<div class="seg" id="evType">' + ["practice", "show"].map(t => '<button type="button" data-type="' + t + '" aria-pressed="' + (e.type === t) + '">' + TYPE[t] + '</button>').join("") + '</div>'
+      + '<div class="row"><label>Date<input type="date" data-f="date" value="' + e.date + '"></label><label>Time<input type="text" data-f="time" value="' + esc(e.time) + '" placeholder="8 pm" autocomplete="off"></label></div>'
+      + '<label>Name<input type="text" data-f="name" value="' + esc(e.name) + '" placeholder="' + (e.type === "show" ? "Venue or event" : "Practice") + '" autocomplete="off"></label>'
+      + '<label>Where<input type="text" data-f="place" value="' + esc(e.place) + '" autocomplete="off"></label>'
+      + '<label>Notes<textarea data-f="notes" rows="2">' + esc(e.notes) + '</textarea></label></div>'
+      + '<div class="kind-head"><span class="lbl">Set list · ' + set.length + ' song' + (set.length === 1 ? "" : "s") + '</span>'
+      + (others.length && !set.length ? '<select id="copyFrom" aria-label="Start from another set list"><option value="">Copy a set list from…</option>' + others.map(o => '<option value="' + o.id + '">' + fmtShort(fromKey(o.date)) + ' · ' + esc(o.name || TYPE[o.type]) + '</option>').join("") + '</select>' : "") + '</div>'
+      + (set.length ? '<ol class="setlist">' + set.map((id, i) => '<li>' + songRow(songById(id), '<span class="ctl"><button type="button" class="mini" data-mv="' + i + ':-1" aria-label="Move up"' + (i ? "" : " disabled") + '>↑</button><button type="button" class="mini" data-mv="' + i + ':1" aria-label="Move down"' + (i < set.length - 1 ? "" : " disabled") + '>↓</button><button type="button" class="mini" data-out="' + i + '" aria-label="Remove from set list">✕</button></span>') + '</li>').join("") + '</ol>'
+        : '<p class="empty">No songs yet. Tap songs below to add them in order.</p>')
+      + '<div class="kind-head"><span class="lbl">Add from the songbook</span></div>'
+      + (songs().length ? '<input type="search" id="songSearch" placeholder="Search songs or artists" value="' + esc(songFilter) + '" autocomplete="off">'
+        + '<ul class="songs pick">' + groupedSongs(avail, s => '<li><button type="button" class="song add" data-add="' + s.id + '">' + songRow(s, '<span class="plusb">+</span>') + '</button></li>') + '</ul>'
+        : '<div class="shownote"><span>The songbook is empty.</span><button type="button" class="btn" data-act="songbook">Open the songbook</button></div>')
+      + '<div class="danger"><button type="button" class="btn' + (armDelete ? " primary" : "") + '" data-act="delev">' + (armDelete ? "Tap again to remove this date" : "Remove this date") + '</button></div>';
+  }
+  function closePanel() { panel = null; const d = $("panel"); if (d.open) d.close(); }
+
+  function createEvent(date, type, name) {
+    const id = newId();
+    if (!writeBand("events", { [id]: { date, type, name: name || "", setlist: [], by: me || "" } })) return null;
+    return id;
+  }
+  function setSetlist(list) { writeBand("events", { [panel.id]: { setlist: list } }); }
+
+  $("gigs").addEventListener("click", e => {
+    const ev = e.target.closest("[data-ev]"); if (ev) { openPanel({ kind: "event", id: ev.dataset.ev }); return; }
+    const a = e.target.closest("[data-act]"); if (!a) return;
+    if (a.dataset.act === "songbook") openPanel({ kind: "songbook" });
+    if (a.dataset.act === "newev") openPanel({ kind: "new", date: todayKey, type: "practice" });
+  });
+  $("panelClose").addEventListener("click", closePanel);
+  $("panel").addEventListener("close", () => { panel = null; });
+  $("panelBody").addEventListener("click", e => {
+    const t = e.target.closest("button"); if (!t || !panel) return;
+    const ty = t.closest("[data-type]");
+    if (ty && panel.kind === "new") { panel.type = ty.dataset.type; renderPanel(); return; }
+    if (ty && panel.kind === "event") { writeBand("events", { [panel.id]: { type: ty.dataset.type } }); return; }
+    const act = t.dataset.act;
+    if (act === "create") {
+      const date = $("newDate").value;
+      if (!date) { toast("Pick a date first."); return; }
+      const id = createEvent(date, panel.type, $("newName").value.trim());
+      if (id) openPanel({ kind: "event", id });
+      return;
+    }
+    if (act === "songbook") { openPanel({ kind: "songbook" }); return; }
+    if (act === "loadkit") {
+      const patch = {}; let o = Date.now();
+      for (const [g, a, titles] of PRESS_KIT_SONGS) for (const tt of titles) patch[newId() + (o % 1000)] = { t: tt, a, g, o: o++ };
+      if (writeBand("songs", patch)) toast("Loaded " + Object.keys(patch).length + " songs from the press kit.");
+      return;
+    }
+    if (act === "addsong") {
+      const title = $("sbTitle").value.trim(), artist = $("sbArtist").value.trim() || "Metallica";
+      if (!title) { toast("Type a song name first."); return; }
+      if (writeBand("songs", { [newId()]: { t: title, a: artist, g: "", o: Date.now() } })) toast("Added " + title + ".");
+      return;
+    }
+    if (act === "pastesongs") {
+      const lines = $("sbPaste").value.split("\n").map(l => l.trim()).filter(Boolean);
+      if (!lines.length) { toast("Paste at least one song."); return; }
+      const patch = {}; let o = Date.now();
+      for (const l of lines) { const m = l.split(/\s+[-–—]\s+/); patch[newId() + (o % 1000)] = { t: m[0].trim(), a: (m[1] || "Metallica").trim(), g: "", o: o++ }; }
+      if (writeBand("songs", patch)) toast("Added " + lines.length + " song" + (lines.length === 1 ? "" : "s") + ".");
+      return;
+    }
+    if (t.dataset.rm) { const s = songById(t.dataset.rm); writeBand("songs", { [t.dataset.rm]: { gone: true } }); toast("Removed " + (s ? s.t : "song") + " from the songbook."); return; }
+    if (panel.kind !== "event") return;
+    const e2 = band.events[panel.id]; const set = (e2.setlist || []).filter(id => songById(id));
+    if (t.dataset.add) { setSetlist(set.concat(t.dataset.add)); return; }
+    if (t.dataset.out != null) { set.splice(Number(t.dataset.out), 1); setSetlist(set); return; }
+    if (t.dataset.mv) { const [i, dir] = t.dataset.mv.split(":").map(Number); const j = i + dir; [set[i], set[j]] = [set[j], set[i]]; setSetlist(set); return; }
+    if (act === "delev") {
+      if (!armDelete) { armDelete = true; renderPanel(); return; }
+      writeBand("events", { [panel.id]: { gone: true } }); closePanel(); toast("Removed that date.");
+    }
+  });
+  $("panelBody").addEventListener("change", e => {
+    if (!panel || panel.kind !== "event") return;
+    const f = e.target.dataset.f;
+    if (f) { if (f === "date" && !e.target.value) return; writeBand("events", { [panel.id]: { [f]: e.target.value.trim() } }); return; }
+    if (e.target.id === "copyFrom" && e.target.value) { const src = band.events[e.target.value]; setSetlist((src.setlist || []).slice()); }
+  });
+  $("panelBody").addEventListener("input", e => {
+    if (e.target.id !== "songSearch") return;
+    songFilter = e.target.value;
+    const pos = e.target.selectionStart; renderPanel();
+    const s = $("songSearch"); if (s) { s.focus(); s.setSelectionRange(pos, pos); }
+  });
+
+
   // ---- boot ----
   $("range").textContent = fmtShort(today) + ", " + today.getFullYear() + " – " + fmtShort(end) + ", " + end.getFullYear();
   rebuild(); renderWho(); renderAll();
 
   function startLocal() {
     localMode = true;
+    try { band = Object.assign({ events: {}, songs: {} }, JSON.parse(localStorage.getItem(BAND_LOCAL_KEY) || "{}")); } catch (e) {}
     try { server = JSON.parse(localStorage.getItem(LOCAL_KEY) || "{}") || {}; } catch (e) { server = {}; }
     $("localBanner").hidden = false;
     ready = true; rebuild(); renderAll();
@@ -721,6 +1053,9 @@ footer.book span:last-child { color: #5a5550; }
         snap.forEach(d => { if (MEMBERS.includes(d.id)) server[d.id] = (d.data() || {}).days || {}; });
         ready = true; rebuild(); renderAll();
       }, () => toast("Lost the live connection to the band calendar. Reload the page to reconnect."));
+      fs.onSnapshot(fs.collection(store, "band"), snap => {
+        const docs = []; snap.forEach(d => docs.push([d.id, d.data()])); onBandSnapshot(docs);
+      }, () => { bandBlocked = true; renderAll(); });
     } catch (e) {
       fb = null;
       startLocal();
@@ -731,6 +1066,7 @@ footer.book span:last-child { color: #5a5550; }
   (async function () {
     try { db = window.claude && window.claude.use ? await window.claude.use("db") : null; } catch (e) { db = null; }
     if (!db) { if (FIREBASE_CONFIG) startFirebase(); else startLocal(); return; }
+    db.collection("band").onSnapshot(snap => onBandSnapshot(snap.docs.map(d => [d.id, d.data()])), () => {});
     db.collection("members").onSnapshot(snap => {
       server = {};
       for (const d of snap.docs) {

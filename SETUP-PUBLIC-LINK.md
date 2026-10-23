@@ -20,11 +20,16 @@ service cloud.firestore {
       allow write: if member in ['Jamie', 'James', 'Phillip', 'Simon']
         && request.resource.data.keys().hasOnly(['days']);
     }
+    match /band/{doc} {
+      allow read: if true;
+      allow write: if doc in ['events', 'songs']
+        && request.resource.data.keys().hasOnly(['events', 'songs']);
+    }
   }
 }
 ```
 
-   These rules let anyone with the link read and mark nights for the four of you, and nothing else.
+   These rules let anyone with the link mark nights for the four of you and edit confirmed dates, set lists and the songbook, and nothing else. Nobody can delete the records.
 
 5. Click the gear icon > **Project settings**. Under **Your apps**, click the web icon `</>`, name it `calendar`, and click **Register app** (skip Firebase Hosting).
 6. Copy the `firebaseConfig` block it shows. It looks like this:
