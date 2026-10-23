@@ -216,8 +216,13 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
 .sgroup { font-family: var(--label); font-weight: 700; text-transform: uppercase; letter-spacing: .12em; font-size: 11px; color: var(--red); padding: 10px 0 2px; }
 .song { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px 0; border-top: 1px solid var(--line); }
 .songs.pick { max-height: 320px; overflow-y: auto; }
-.song.add { width: 100%; background: transparent; border: 0; border-top: 1px solid var(--line); text-align: left; padding: 8px 4px; }
-.song.add:hover { background: var(--panel-2); }
+a.tab { color: var(--fg); text-decoration: none; font-weight: 600; }
+a.tab span { color: var(--red); font-size: .85em; }
+a.tab:hover, a.tab:focus-visible { text-decoration: underline; text-decoration-color: var(--red); }
+.mini.addb { color: var(--yes); font-weight: 700; white-space: nowrap; }
+.linkedit { display: flex; gap: 8px; width: 100%; padding-top: 6px; }
+.linkedit input { flex: 1; min-width: 0; background: var(--panel-2); color: var(--fg); border: 1px solid var(--line); border-radius: var(--r); padding: 6px 8px; font: inherit; font-size: 14px; }
+.song { flex-wrap: wrap; }
 .sname { display: grid; min-width: 0; overflow-wrap: anywhere; }
 .sname small { color: var(--muted); font-size: 12px; }
 .ctl { display: inline-flex; gap: 4px; }
@@ -799,6 +804,44 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
     ["", "Lenny Kravitz", ["Are You Gonna Go My Way"]],
     ["", "Elvis Presley", ["Suspicious Minds"]],
   ];
+  // Songsterr song IDs for the main tab of each press-kit song (one page holds every instrument's track).
+  const SONGSTERR_IDS = {
+    "Metallica": { "The Four Horsemen": 464, "Motorbreath": 12192, "Jump in the Fire": 12446, "Seek and Destroy": "metallica-seek-destroy-tab-s247", "For Whom the Bell Tolls": 572, "Ride the Lightning": 248, "Fade to Black": 20, "Creeping Death": 5194, "Master of Puppets": 455118, "Welcome Home (Sanitarium)": 585, "Disposable Heroes": 23389, "Blackened": 516, "One": 444, "The Shortest Straw": 12427, "Enter Sandman": 19, "Sad but True": 317, "Wherever I May Roam": 3707, "Don't Tread on Me": 12347, "The Unforgiven": 19616, "Nothing Else Matters": 439171, "Of Wolf and Man": 12892, "Fuel": 12104, "Turn the Page": 6720, "Through the Never": 584 },
+    "Megadeth": { "Holy Wars... The Punishment Due": 24033, "Hangar 18": 12836, "Symphony of Destruction": 487, "Tornado of Souls": 12824, "Rust in Peace... Polaris": 12523, "Skin o' My Teeth": 12784 },
+    "Alice in Chains": { "Them Bones": 22808, "Down in a Hole": 152, "Rooster": 25017, "Would?": 59895, "Nutshell": 23793 },
+    "Nirvana": { "Smells Like Teen Spirit": 269, "In Bloom": 295, "Come as You Are": 14, "Lithium": 34 },
+    "Pearl Jam": { "Even Flow": 384, "Alive": 489, "Black": 15712, "Jeremy": 15691 },
+    "Stone Temple Pilots": { "Sex Type Thing": 23530, "Plush": 293, "Interstate Love Song": 294 },
+    "Bush": { "Machinehead": 3617, "Come Down": "bush-comedown-tab-s3537", "Everything Zen": 27666 },
+    "System of a Down": { "Toxicity": 21961, "Chop Suey!": 3708 },
+    "Black Sabbath": { "Paranoid": 296, "War Pigs": 10137 },
+    "Queen": { "Crazy Little Thing Called Love": 23541, "Stone Cold Crazy": 51064 },
+    "Soundgarden": { "Black Hole Sun": 227 },
+    "Smashing Pumpkins": { "Bullet with Butterfly Wings": 17301 },
+    "Guns N' Roses": { "Sweet Child o' Mine": 23 },
+    "Live": { "Lightning Crashes": 11538 },
+    "Type O Negative": { "Black No. 1": 20359 },
+    "Green Day": { "Basket Case": 1401 },
+    "Bon Jovi": { "Blaze of Glory": "jon-bon-jovi-blaze-of-glory-tab-s27291" },
+    "Lenny Kravitz": { "Are You Gonna Go My Way": 243 },
+    "Elvis Presley": { "Suspicious Minds": 15291 },
+  };
+  const slug = t => String(t).toLowerCase().replace(/['’]/g, "").replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const normT = t => String(t).toLowerCase().replace(/[^a-z0-9]/g, "");
+  function knownTabId(s) {
+    const byArtist = SONGSTERR_IDS[s.a]; if (!byArtist) return 0;
+    for (const t in byArtist) if (normT(t) === normT(s.t)) return byArtist[t];
+    return 0;
+  }
+  // A song's own saved link wins; then the known main tab; otherwise a Songsterr search, which lists the most popular tab first.
+  function tabUrl(s) {
+    if (s.u) return s.u;
+    const id = knownTabId(s);
+    if (typeof id === "string") return "https://www.songsterr.com/a/wsa/" + id;
+    if (id) return "https://www.songsterr.com/a/wsa/" + slug(s.a) + "-" + slug(s.t) + "-tab-s" + id;
+    return "https://www.songsterr.com/?pattern=" + encodeURIComponent(s.a + " " + s.t);
+  }
+  const tabLink = s => '<a class="tab" href="' + esc(tabUrl(s)) + '" target="_blank" rel="noopener" title="Open on Songsterr">' + esc(s.t) + '<span aria-hidden="true"> ↗</span></a>';
   const BAND_LOCAL_KEY = LOCAL_KEY + "-band";
   let band = { events: {}, songs: {} }, bandBlocked = false;
   const bandExists = {}, bandQ = {};
@@ -881,9 +924,9 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
 
   // ---- panel: event editor, new date, songbook ----
   let panel = null; // {kind: "event", id} | {kind: "new", date, type} | {kind: "songbook"}
-  let armDelete = false, songFilter = "";
+  let armDelete = false, songFilter = "", linkEdit = null;
   function openPanel(p) {
-    panel = p; armDelete = false; songFilter = "";
+    panel = p; armDelete = false; songFilter = ""; linkEdit = null;
     renderPanel();
     const d = $("panel"); if (!d.open) { try { d.showModal(); } catch (e) { d.setAttribute("open", ""); } }
   }
@@ -894,7 +937,7 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
     renderPanel();
   }
   function songRow(s, extra) {
-    return '<span class="sname">' + esc(s.t) + '<small>' + esc(s.a) + (s.g ? " · " + esc(s.g) : "") + '</small></span>' + extra;
+    return '<span class="sname">' + tabLink(s) + '<small>' + esc(s.a) + (s.g ? " · " + esc(s.g) : "") + '</small></span>' + extra;
   }
   function groupedSongs(list, rowFn) {
     let out = "", last = null;
@@ -921,9 +964,9 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
       const list = songs();
       $("panelTitle").textContent = "Songbook · " + list.length + " song" + (list.length === 1 ? "" : "s");
       body.innerHTML = (list.length ? "" : '<div class="shownote"><span>The songbook is empty.</span><button type="button" class="btn primary" data-act="loadkit">Load the press kit repertoire</button></div>')
-        + '<div class="form row"><label>Song<input type="text" id="sbTitle" autocomplete="off"></label><label>Artist<input type="text" id="sbArtist" value="Metallica" autocomplete="off"></label><button type="button" class="btn primary" data-act="addsong">Add</button></div>'
+        + '<div class="form row"><label>Song<input type="text" id="sbTitle" autocomplete="off"></label><label>Artist<input type="text" id="sbArtist" value="Metallica" autocomplete="off"></label><label>Songsterr link (optional)<input type="url" id="sbLink" placeholder="https://www.songsterr.com/a/wsa/..." autocomplete="off"></label><button type="button" class="btn primary" data-act="addsong">Add</button></div>'
         + '<details class="paste"><summary>Paste several songs</summary><p class="hint">One per line, as Song - Artist. Lines without an artist use Metallica.</p><textarea id="sbPaste" rows="5"></textarea><button type="button" class="btn" data-act="pastesongs">Add these songs</button></details>'
-        + '<ul class="songs">' + groupedSongs(list, s => '<li class="song">' + songRow(s, '<button type="button" class="mini" data-rm="' + s.id + '" aria-label="Remove ' + esc(s.t) + '">Remove</button>') + '</li>') + '</ul>';
+        + '<ul class="songs">' + groupedSongs(list, s => '<li class="song">' + songRow(s, '<span class="ctl"><button type="button" class="mini" data-link="' + s.id + '" aria-label="Change the Songsterr link for ' + esc(s.t) + '">Link</button><button type="button" class="mini" data-rm="' + s.id + '" aria-label="Remove ' + esc(s.t) + '">Remove</button></span>') + (linkEdit === s.id ? '<div class="linkedit"><input type="url" id="linkInput" value="' + esc(s.u || tabUrl(s)) + '" aria-label="Songsterr link"><button type="button" class="btn primary" data-savelink="' + s.id + '">Save</button></div>' : '') + '</li>') + '</ul>';
       return;
     }
     const e = (band.events || {})[panel.id];
@@ -947,7 +990,7 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
         : '<p class="empty">No songs yet. Tap songs below to add them in order.</p>')
       + '<div class="kind-head"><span class="lbl">Add from the songbook</span></div>'
       + (songs().length ? '<input type="search" id="songSearch" placeholder="Search songs or artists" value="' + esc(songFilter) + '" autocomplete="off">'
-        + '<ul class="songs pick">' + groupedSongs(avail, s => '<li><button type="button" class="song add" data-add="' + s.id + '">' + songRow(s, '<span class="plusb">+</span>') + '</button></li>') + '</ul>'
+        + '<ul class="songs pick">' + groupedSongs(avail, s => '<li class="song">' + songRow(s, '<button type="button" class="mini addb" data-add="' + s.id + '" aria-label="Add ' + esc(s.t) + ' to the set list">+ Add</button>') + '</li>') + '</ul>'
         : '<div class="shownote"><span>The songbook is empty.</span><button type="button" class="btn" data-act="songbook">Open the songbook</button></div>')
       + '<div class="danger"><button type="button" class="btn' + (armDelete ? " primary" : "") + '" data-act="delev">' + (armDelete ? "Tap again to remove this date" : "Remove this date") + '</button></div>';
   }
@@ -991,7 +1034,8 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
     if (act === "addsong") {
       const title = $("sbTitle").value.trim(), artist = $("sbArtist").value.trim() || "Metallica";
       if (!title) { toast("Type a song name first."); return; }
-      if (writeBand("songs", { [newId()]: { t: title, a: artist, g: "", o: Date.now() } })) toast("Added " + title + ".");
+      const link = $("sbLink").value.trim();
+      if (writeBand("songs", { [newId()]: { t: title, a: artist, g: "", o: Date.now(), u: link } })) toast("Added " + title + (link ? " with its tab link." : ". It links to a Songsterr search until you add its tab link."));
       return;
     }
     if (act === "pastesongs") {
@@ -1000,6 +1044,13 @@ dialog#panel::backdrop { background: rgba(0, 0, 0, .6); }
       const patch = {}; let o = Date.now();
       for (const l of lines) { const m = l.split(/\s+[-–—]\s+/); patch[newId() + (o % 1000)] = { t: m[0].trim(), a: (m[1] || "Metallica").trim(), g: "", o: o++ }; }
       if (writeBand("songs", patch)) toast("Added " + lines.length + " song" + (lines.length === 1 ? "" : "s") + ".");
+      return;
+    }
+    if (t.dataset.link) { linkEdit = linkEdit === t.dataset.link ? null : t.dataset.link; renderPanel(); const li = $("linkInput"); if (li) { li.focus(); li.select(); } return; }
+    if (t.dataset.savelink) {
+      const v = $("linkInput").value.trim();
+      if (v && !/^https?:\/\//.test(v)) { toast("Paste a full link starting with https://"); return; }
+      linkEdit = null; writeBand("songs", { [t.dataset.savelink]: { u: v } }); toast(v ? "Saved the tab link." : "Cleared the link. It will use the default tab.");
       return;
     }
     if (t.dataset.rm) { const s = songById(t.dataset.rm); writeBand("songs", { [t.dataset.rm]: { gone: true } }); toast("Removed " + (s ? s.t : "song") + " from the songbook."); return; }
