@@ -112,7 +112,6 @@ label.check { display: inline-flex; gap: 6px; align-items: center; }
 .day.off { background: transparent; border-color: transparent; opacity: .35; }
 .day.dim { opacity: .28; }
 button.day:hover { border-color: var(--fg); }
-.grid { touch-action: pan-y; }
 .day { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 .day.sel { outline: 3px solid var(--cream); outline-offset: -2px; z-index: 1; background-image: linear-gradient(rgba(241, 236, 226, .16), rgba(241, 236, 226, .16)); }
 .selbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px)); z-index: 15; width: max-content; max-width: calc(100vw - 24px); background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--red); border-radius: 10px; padding: 10px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, .5); }
@@ -264,7 +263,7 @@ a.tab:hover, a.tab:focus-visible { text-decoration: underline; text-decoration-c
         <button type="button" data-brush="c" aria-pressed="false">Clear</button>
       </div>
     </div>
-    <p class="hint" style="margin:0">Mark many nights at once: on a computer, click one night and shift-click another (or drag across them). On a phone, swipe sideways across nights, then keep dragging to cover more weeks.</p>
+    <p class="hint" style="margin:0">Mark many nights at once on a computer: click one night, then hold Shift and click another. On a phone, use Quick fill or tap nights one at a time.</p>
     <div class="legend" aria-label="Legend">
       <span><i class="sw good"></i>Full set: everyone's in</span>
       <span><i class="sw maybe"></i>No one's out, some maybes</span>
@@ -640,7 +639,7 @@ a.tab:hover, a.tab:focus-visible { text-decoration: underline; text-decoration-c
     if (brush !== "i") needMe();
   });
   // ---- selecting a range of nights ----
-  let anchor = null, drag = null, suppressClick = false;
+  let anchor = null;
   function rangeKeys(a, b) {
     let lo = fromKey(a), hi = fromKey(b);
     if (lo > hi) [lo, hi] = [hi, lo];
@@ -686,37 +685,8 @@ a.tab:hover, a.tab:focus-visible { text-decoration: underline; text-decoration-c
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && selSet.size) clearSel(); });
 
-  cal.addEventListener("pointerdown", e => {
-    const b = e.target.closest("button.day[data-date]");
-    if (!b || e.button > 0 || e.shiftKey) return;
-    drag = { start: b.dataset.date, cur: b.dataset.date, x: e.clientX, y: e.clientY, type: e.pointerType, active: false };
-  });
-  window.addEventListener("pointermove", e => {
-    if (!drag) return;
-    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    if (!drag.active) {
-      if (Math.hypot(dx, dy) < 10) return;
-      // On touch, an up/down swipe scrolls the page; only a sideways swipe starts a selection.
-      if (drag.type !== "mouse" && Math.abs(dy) > Math.abs(dx)) { drag = null; return; }
-      drag.active = true;
-    }
-    const el = document.elementFromPoint(e.clientX, e.clientY);
-    const cell = el && el.closest("button.day[data-date]");
-    if (cell && cell.dataset.date !== drag.cur) { drag.cur = cell.dataset.date; selSet = new Set(rangeKeys(drag.start, drag.cur)); paintSel(); }
-    else if (drag.cur === drag.start && !selSet.size) { selSet = new Set(rangeKeys(drag.start, drag.start)); paintSel(); }
-  });
-  window.addEventListener("pointerup", () => {
-    if (!drag) return;
-    const d = drag; drag = null;
-    if (!d.active) return;
-    suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
-    anchor = d.cur;
-    finishRange(rangeKeys(d.start, d.cur));
-  });
-  window.addEventListener("pointercancel", () => { if (drag && drag.active) clearSel(); drag = null; });
 
   cal.addEventListener("click", e => {
-    if (suppressClick) { suppressClick = false; return; }
     const b = e.target.closest("button.day"); if (!b) return;
     const d = b.dataset.date;
     if (e.shiftKey && anchor) { e.preventDefault(); finishRange(rangeKeys(anchor, d)); anchor = d; return; }
